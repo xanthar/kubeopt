@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubeopt-ai
+  namespace: kubeopt
+  labels:
+    app: kubeopt-ai
+  annotations:
+    # NGINX Ingress Controller annotations
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "16m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "10"
+    nginx.ingress.kubernetes.io/limit-connections: "5"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - kubeopt.example.com
+      secretName: kubeopt-ai-tls
+  rules:
+    - host: kubeopt.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kubeopt-ai
+                port:
+                  name: http
+---
+# Optional: Certificate for TLS (requires cert-manager)
+# Uncomment if using cert-manager for automatic certificate management
+#
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: kubeopt-ai-tls
+#   namespace: kubeopt
+# spec:
+#   secretName: kubeopt-ai-tls
+#   issuerRef:
+#     name: letsencrypt-prod
+#     kind: ClusterIssuer
+#   dnsNames:
+#     - kubeopt.example.com

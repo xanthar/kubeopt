@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubeopt-ai-config
+  namespace: kubeopt
+  labels:
+    app: kubeopt-ai
+data:
+  # Flask environment
+  FLASK_ENV: "production"
+
+  # Prometheus configuration
+  # Update this to point to your Prometheus instance
+  PROMETHEUS_BASE_URL: "http://prometheus-server.monitoring.svc.cluster.local:9090"
+
+  # Metrics lookback period in days
+  KUBEOPT_DEFAULT_LOOKBACK_DAYS: "7"
+
+  # LLM model configuration
+  LLM_MODEL_NAME: "claude-sonnet-4-20250514"
+
+  # Logging configuration
+  LOG_LEVEL: "INFO"
+  LOG_FORMAT: "json"

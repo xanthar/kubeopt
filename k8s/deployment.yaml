@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeopt-ai
+  namespace: kubeopt
+  labels:
+    app: kubeopt-ai
+    app.kubernetes.io/name: kubeopt-ai
+    app.kubernetes.io/component: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kubeopt-ai
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: kubeopt-ai
+        app.kubernetes.io/name: kubeopt-ai
+        app.kubernetes.io/component: api
+    spec:
+      serviceAccountName: kubeopt-ai
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: kubeopt-ai
+          image: kubeopt-ai:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          env:
+            - name: FLASK_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: kubeopt-ai-config
+                  key: FLASK_ENV
+            - name: PROMETHEUS_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: kubeopt-ai-config
+                  key: PROMETHEUS_BASE_URL
+            - name: KUBEOPT_DEFAULT_LOOKBACK_DAYS
+              valueFrom:
+                configMapKeyRef:
+                  name: kubeopt-ai-config
+                  key: KUBEOPT_DEFAULT_LOOKBACK_DAYS
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: kubeopt-ai-secrets
+                  key: DATABASE_URL
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kubeopt-ai-secrets
+                  key: LLM_API_KEY
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kubeopt-ai-secrets
+                  key: SECRET_KEY
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health/live
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health/ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - kubeopt-ai
+                topologyKey: kubernetes.io/hostname

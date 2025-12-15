@@ -1,0 +1,43 @@
+# KubeOpt AI - AI-Driven Kubernetes Resource & Cost Optimizer
+# Core Framework
+Flask>=3.0.0
+gunicorn>=21.2.0
+
+# Database
+SQLAlchemy>=2.0.0
+Flask-SQLAlchemy>=3.1.0
+psycopg2-binary>=2.9.9
+alembic>=1.13.0
+Flask-Migrate>=4.0.0
+
+# Validation & Serialization
+pydantic>=2.5.0
+marshmallow>=3.20.0
+
+# HTTP Client (for Prometheus & LLM API calls)
+requests>=2.31.0
+httpx>=0.25.0
+
+# YAML Processing
+PyYAML>=6.0.1
+ruamel.yaml>=0.18.0
+
+# Utilities
+python-dotenv>=1.0.0
+
+# Development & Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+responses>=0.24.0
+respx>=0.20.0
+factory-boy>=3.3.0
+
+# Code Quality
+ruff>=0.1.0
+mypy>=1.7.0
+bandit>=1.7.0
+
+# Type Stubs
+types-requests>=2.31.0
+types-PyYAML>=6.0.0

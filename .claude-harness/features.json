@@ -1,0 +1,106 @@
+{
+  "current_phase": "Phase 1",
+  "features": [
+    {
+      "id": "F001",
+      "name": "Project Scaffold & Flask App",
+      "description": "Scaffold project structure, config, and minimal Flask app with health endpoint",
+      "status": "completed",
+      "priority": 1
+    },
+    {
+      "id": "F002",
+      "name": "Database Models & Migrations",
+      "description": "SQLAlchemy models for OptimizationRun, WorkloadSnapshot, Suggestion with Alembic migrations",
+      "status": "completed",
+      "priority": 2
+    },
+    {
+      "id": "F003",
+      "name": "Kubernetes Manifest Scanner",
+      "description": "Parse K8s YAML manifests and extract workload descriptors",
+      "status": "completed",
+      "priority": 3
+    },
+    {
+      "id": "F004",
+      "name": "Prometheus Metrics Collector",
+      "description": "Collect CPU/memory metrics from Prometheus with configurable queries",
+      "status": "completed",
+      "priority": 4
+    },
+    {
+      "id": "F005",
+      "name": "LLM Client & Prompts",
+      "description": "Claude LLM client abstraction with prompts and response validation",
+      "status": "completed",
+      "priority": 5
+    },
+    {
+      "id": "F006",
+      "name": "YAML Diff Generation",
+      "description": "Generate diff-style YAML suggestions from LLM recommendations",
+      "status": "completed",
+      "priority": 6
+    },
+    {
+      "id": "F007",
+      "name": "Optimizer Service Orchestration",
+      "description": "Top-level orchestration logic connecting scanner, metrics, LLM, and database",
+      "status": "completed",
+      "priority": 7
+    },
+    {
+      "id": "F008",
+      "name": "REST API Endpoints",
+      "description": "Flask API endpoints for optimization runs",
+      "status": "completed",
+      "priority": 8
+    },
+    {
+      "id": "F009",
+      "name": "Kubernetes Manifests",
+      "description": "K8s deployment manifests for the application",
+      "status": "completed",
+      "priority": 9
+    },
+    {
+      "id": "F010",
+      "name": "Documentation & Polish",
+      "description": "README, logging improvements, and final polish",
+      "status": "completed",
+      "priority": 10
+    },
+    {
+      "id": "F011",
+      "name": "Cost Projection Engine",
+      "description": "Calculate estimated monthly cost savings using cloud provider pricing models (AWS/GCP/Azure). Shows dollar impact of optimization recommendations with ROI projections.",
+      "status": "completed",
+      "priority": 11,
+      "subtasks": [
+        "Cloud pricing models for compute resources",
+        "Cost calculator service with multi-provider support",
+        "Savings projection based on current vs recommended resources",
+        "API endpoints for cost analysis",
+        "Unit tests"
+      ]
+    },
+    {
+      "id": "F012",
+      "name": "Workload Anomaly Detection",
+      "description": "ML-based detection of abnormal resource usage patterns with intelligent alerting. Uses statistical analysis to identify memory leaks, CPU spikes, and unusual workload behavior.",
+      "status": "completed",
+      "priority": 12,
+      "subtasks": [
+        "Statistical anomaly detection algorithms (Z-score, IQR, rolling averages)",
+        "Pattern classification (memory leak, CPU spike, gradual drift)",
+        "Alert severity scoring and thresholds",
+        "Anomaly detection service with Prometheus integration",
+        "API endpoints for anomaly queries",
+        "Unit tests"
+      ]
+    }
+  ],
+  "completed": ["F001", "F002", "F003", "F004", "F005", "F006", "F007", "F008", "F009", "F010", "F011", "F012"],
+  "blocked": []
+}
