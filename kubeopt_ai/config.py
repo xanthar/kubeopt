@@ -6,6 +6,7 @@ All configuration is read from environment variables following twelve-factor app
 """
 
 import os
+from datetime import timedelta
 from typing import Optional
 
 
@@ -56,6 +57,34 @@ class BaseConfig:
     LOG_LEVEL: str = os.environ.get("LOG_LEVEL", "INFO")
     LOG_FORMAT: str = "json"  # 'json' or 'text'
 
+    # Audit logging
+    AUDIT_LOG_ENABLED: bool = os.environ.get("AUDIT_LOG_ENABLED", "true").lower() == "true"
+    AUDIT_LOG_RETENTION_DAYS: int = int(os.environ.get("AUDIT_LOG_RETENTION_DAYS", "90"))
+
+    # Rate limiting
+    RATE_LIMIT_ENABLED: bool = os.environ.get("RATE_LIMIT_ENABLED", "true").lower() == "true"
+    RATE_LIMIT_DEFAULT: str = os.environ.get("RATE_LIMIT_DEFAULT", "100/hour")
+    RATE_LIMIT_STORAGE_URL: str = os.environ.get("RATE_LIMIT_STORAGE_URL", "memory://")
+    RATE_LIMIT_BYPASS_KEY: Optional[str] = os.environ.get("RATE_LIMIT_BYPASS_KEY")
+
+    # JWT Authentication
+    JWT_SECRET_KEY: str = os.environ.get("JWT_SECRET_KEY", "jwt-dev-secret-change-in-prod")
+    JWT_ACCESS_TOKEN_EXPIRES: timedelta = timedelta(
+        seconds=int(os.environ.get("JWT_ACCESS_TOKEN_EXPIRES", "900"))  # 15 minutes
+    )
+    JWT_REFRESH_TOKEN_EXPIRES: timedelta = timedelta(
+        seconds=int(os.environ.get("JWT_REFRESH_TOKEN_EXPIRES", "604800"))  # 7 days
+    )
+    JWT_TOKEN_LOCATION: list = ["headers"]
+    JWT_HEADER_NAME: str = "Authorization"
+    JWT_HEADER_TYPE: str = "Bearer"
+
+    # Authentication settings
+    AUTH_ENABLED: bool = os.environ.get("AUTH_ENABLED", "true").lower() == "true"
+    AUTH_PASSWORD_MIN_LENGTH: int = int(os.environ.get("AUTH_PASSWORD_MIN_LENGTH", "8"))
+    AUTH_MAX_LOGIN_ATTEMPTS: int = int(os.environ.get("AUTH_MAX_LOGIN_ATTEMPTS", "5"))
+    AUTH_LOCKOUT_DURATION: int = int(os.environ.get("AUTH_LOCKOUT_DURATION", "900"))  # 15 minutes
+
 
 class DevConfig(BaseConfig):
     """Development configuration."""
@@ -81,6 +110,14 @@ class TestConfig(BaseConfig):
     PROMETHEUS_TIMEOUT: int = 5
     LLM_RETRY_ATTEMPTS: int = 1
 
+    # Disable rate limiting for tests by default
+    RATE_LIMIT_ENABLED: bool = False
+
+    # Auth settings for tests
+    AUTH_ENABLED: bool = True  # Keep auth enabled for auth tests
+    JWT_ACCESS_TOKEN_EXPIRES: timedelta = timedelta(seconds=300)  # 5 minutes for tests
+    JWT_REFRESH_TOKEN_EXPIRES: timedelta = timedelta(seconds=600)  # 10 minutes for tests
+
 
 class ProdConfig(BaseConfig):
     """Production configuration."""
@@ -89,12 +126,15 @@ class ProdConfig(BaseConfig):
 
     # Production requires a real secret key
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "")
+    JWT_SECRET_KEY: str = os.environ.get("JWT_SECRET_KEY", "")
 
     @classmethod
     def validate(cls) -> None:
         """Validate production configuration."""
         if not cls.SECRET_KEY:
             raise ValueError("SECRET_KEY must be set in production")
+        if not cls.JWT_SECRET_KEY:
+            raise ValueError("JWT_SECRET_KEY must be set in production")
         if not cls.LLM_API_KEY:
             raise ValueError("LLM_API_KEY must be set in production")
         if cls.SQLALCHEMY_DATABASE_URI.startswith("sqlite"):
