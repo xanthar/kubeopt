@@ -1,6 +1,6 @@
 # Session Progress Log
 
-## Last Session: 2025-12-15 19:00 UTC
+## Last Session: 2025-12-15 19:33 UTC
 
 ### Completed This Session
 - [x] **F013: Integration Tests for Insights API** (48 tests)
@@ -30,21 +30,31 @@
 - [x] Implemented F-002 Rate Limiting - flask-limiter integration, rate limit decorators, 27 unit tests passing
 - [x] F018: RBAC and Multi-Tenancy
 - [x] **F019: Multi-Cluster Support** (8/8 subtasks, 33 tests)
-  - Cluster model with connection config, provider, region, Prometheus URL
-  - ClusterManager with register, list, update, delete, test_connection
-  - `/api/v1/clusters` REST API with CRUD endpoints
+- [x] Cluster model with connection config, provider, region, Prometheus URL
+- [x] ClusterManager with register, list, update, delete, test_connection
+- [x] `/api/v1/clusters` REST API with CRUD endpoints
 - [x] **F020: Historical Trend Analysis** (7/7 subtasks, 24 tests)
-  - MetricsHistory and TrendAnalysis models
-  - HistoryCollector for background metrics collection
-  - TrendAnalyzer with linear regression, seasonality detection
-  - `/api/v1/history` REST API with metrics/trends endpoints
+- [x] MetricsHistory and TrendAnalysis models
+- [x] HistoryCollector for background metrics collection
+- [x] TrendAnalyzer with linear regression, seasonality detection
+- [x] `/api/v1/history` REST API with metrics/trends endpoints
 - [x] **F029: OpenAPI Swagger Documentation** (6/6 subtasks, 23 tests)
-  - OpenAPI 3.0 specification
-  - `/api/docs` (Swagger UI) and `/api/redoc` endpoints
-  - All API endpoints, schemas, and security documented
+- [x] OpenAPI 3.0 specification
+- [x] `/api/docs` (Swagger UI) and `/api/redoc` endpoints
+- [x] All API endpoints, schemas, and security documented
+- [x] **F021: Scheduled Optimization Runs** (7/7 subtasks, 42 tests)
+  - APScheduler + croniter for cron scheduling
+  - Schedule and ScheduleRun database models
+  - SchedulerService with full CRUD operations
+  - Cron expression validation with next-run preview
+  - Auto-pause on consecutive failures
+  - `/api/v1/schedules` REST API with CRUD endpoints
+  - Enable/disable/pause/resume schedule controls
+  - Manual trigger capability
+- [x] **Total Tests: 442 passing**
 
 ### Current Work In Progress
-- [ ] No tasks in progress - all 3 requested features complete!
+- [ ] No tasks in progress - F021 complete!
 
 ### Blockers
 - None
@@ -81,6 +91,19 @@
 - `GET /webhooks/<id>/logs` - Get delivery logs
 - `POST /webhooks/<id>/enable` - Enable webhook
 - `POST /webhooks/<id>/disable` - Disable webhook
+- `POST /schedules` - Create schedule
+- `GET /schedules` - List schedules
+- `GET /schedules/<id>` - Get schedule
+- `PUT /schedules/<id>` - Update schedule
+- `DELETE /schedules/<id>` - Delete schedule
+- `POST /schedules/<id>/enable` - Enable schedule
+- `POST /schedules/<id>/disable` - Disable schedule
+- `POST /schedules/<id>/pause` - Pause schedule
+- `POST /schedules/<id>/resume` - Resume schedule
+- `POST /schedules/<id>/trigger` - Manually trigger schedule
+- `GET /schedules/<id>/runs` - List schedule runs
+- `GET /schedules/runs/<run_id>` - Get schedule run
+- `POST /schedules/validate-cron` - Validate cron expression
 - `tests/conftest.py` - Shared pytest fixtures
 - `tests/integration/__init__.py`
 - `tests/integration/test_insights_api.py` - 48 integration tests
@@ -127,6 +150,10 @@
 - /root/projects/kubeopt/tests/unit/test_trends.py
 - /root/projects/kubeopt/tests/unit/test_docs.py
 - /root/projects/kubeopt/tests/conftest.py
+- /root/projects/kubeopt/migrations/versions/20251215_004_add_schedules.py
+- /root/projects/kubeopt/kubeopt_ai/core/scheduler.py
+- /root/projects/kubeopt/kubeopt_ai/routes/schedules.py
+- /root/projects/kubeopt/tests/unit/test_scheduler.py
 
 ---
 ## Previous Sessions

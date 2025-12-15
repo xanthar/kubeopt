@@ -70,6 +70,7 @@ def register_blueprints(app: Flask) -> None:
     from kubeopt_ai.routes.clusters import clusters_bp
     from kubeopt_ai.routes.history import history_bp
     from kubeopt_ai.routes.docs import docs_bp
+    from kubeopt_ai.routes.schedules import schedules_bp
 
     app.register_blueprint(health_bp)
     app.register_blueprint(optimize_bp, url_prefix="/api/v1")
@@ -81,6 +82,7 @@ def register_blueprints(app: Flask) -> None:
     app.register_blueprint(clusters_bp)  # F019: Multi-cluster support
     app.register_blueprint(history_bp)   # F020: Historical trends
     app.register_blueprint(docs_bp)      # F029: OpenAPI documentation
+    app.register_blueprint(schedules_bp) # F021: Scheduled optimization runs
 
 
 def register_error_handlers(app: Flask) -> None:

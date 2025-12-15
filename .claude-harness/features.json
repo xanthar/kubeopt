@@ -2,48 +2,6 @@
   "current_phase": "Phase 1",
   "features": [
     {
-      "id": "F021",
-      "name": "Scheduled Optimization Runs",
-      "status": "pending",
-      "priority": 21,
-      "tests_passing": false,
-      "e2e_validated": false,
-      "subtasks": [
-        {
-          "name": "Add APScheduler to requirements.txt",
-          "done": false
-        },
-        {
-          "name": "Add Schedule and ScheduleRun models",
-          "done": false
-        },
-        {
-          "name": "Create Alembic migration",
-          "done": false
-        },
-        {
-          "name": "Implement SchedulerService with CRUD operations",
-          "done": false
-        },
-        {
-          "name": "Add cron expression validation to schemas",
-          "done": false
-        },
-        {
-          "name": "Create schedules blueprint with API endpoints",
-          "done": false
-        },
-        {
-          "name": "Write scheduler tests with time mocking",
-          "done": false
-        }
-      ],
-      "notes": "",
-      "created_at": "2025-12-15T17:46:05.870820+00:00",
-      "completed_at": null,
-      "blocked_reason": null
-    },
-    {
       "id": "F022",
       "name": "Recommendation Auto-Apply",
       "status": "pending",
@@ -1100,6 +1058,48 @@
       "notes": "",
       "created_at": "2025-12-15T17:47:17.177510+00:00",
       "completed_at": "2025-12-15T19:00:01.528095+00:00",
+      "blocked_reason": null
+    },
+    {
+      "id": "F021",
+      "name": "Scheduled Optimization Runs",
+      "status": "completed",
+      "priority": 21,
+      "tests_passing": true,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add APScheduler to requirements.txt",
+          "done": true
+        },
+        {
+          "name": "Add Schedule and ScheduleRun models",
+          "done": true
+        },
+        {
+          "name": "Create Alembic migration",
+          "done": true
+        },
+        {
+          "name": "Implement SchedulerService with CRUD operations",
+          "done": true
+        },
+        {
+          "name": "Add cron expression validation to schemas",
+          "done": true
+        },
+        {
+          "name": "Create schedules blueprint with API endpoints",
+          "done": true
+        },
+        {
+          "name": "Write scheduler tests with time mocking",
+          "done": true
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:46:05.870820+00:00",
+      "completed_at": "2025-12-15T19:33:06.667148+00:00",
       "blocked_reason": null
     }
   ],

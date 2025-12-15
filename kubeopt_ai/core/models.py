@@ -107,6 +107,29 @@ class TrendDirection(str, Enum):
     VOLATILE = "volatile"
 
 
+class ScheduleStatus(str, Enum):
+    """Status values for schedules."""
+    ACTIVE = "active"
+    PAUSED = "paused"
+    DISABLED = "disabled"
+
+
+class ScheduleRunStatus(str, Enum):
+    """Status values for schedule runs."""
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    SKIPPED = "skipped"
+
+
+class ScheduleTriggerType(str, Enum):
+    """How a schedule run was triggered."""
+    SCHEDULED = "scheduled"
+    MANUAL = "manual"
+    API = "api"
+
+
 class TeamStatus(str, Enum):
     """Status values for teams."""
     ACTIVE = "active"
@@ -1696,5 +1719,293 @@ class TrendAnalysis(db.Model):
             "confidence_score": self.confidence_score,
             "data_points_count": self.data_points_count,
             "analysis_metadata": self.analysis_metadata,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+# =============================================================================
+# Scheduled Optimization Models (F021)
+# =============================================================================
+
+
+class Schedule(db.Model):
+    """
+    Scheduled optimization run configuration.
+
+    Defines when and how optimization runs should be automatically triggered
+    using cron expressions.
+    """
+    __tablename__ = "schedules"
+
+    id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
+        default=generate_uuid
+    )
+    name: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False
+    )
+    description: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    cron_expression: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False
+    )
+    timezone: Mapped[str] = mapped_column(
+        String(50),
+        default="UTC",
+        nullable=False
+    )
+    status: Mapped[ScheduleStatus] = mapped_column(
+        SQLEnum(ScheduleStatus, native_enum=False),
+        default=ScheduleStatus.ACTIVE,
+        nullable=False
+    )
+    # Optimization run configuration
+    manifest_source_path: Mapped[str] = mapped_column(
+        String(1024),
+        nullable=False
+    )
+    lookback_days: Mapped[int] = mapped_column(
+        Integer,
+        default=7,
+        nullable=False
+    )
+    # Multi-cluster support
+    cluster_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("clusters.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    # Multi-tenancy: team ownership
+    team_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("teams.id", ondelete="CASCADE"),
+        nullable=True
+    )
+    created_by_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    # Additional settings
+    settings: Mapped[dict] = mapped_column(
+        JSON,
+        nullable=True,
+        default=dict
+    )
+    # Run tracking
+    last_run_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    next_run_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    run_count: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False
+    )
+    failure_count: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False
+    )
+    consecutive_failures: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False
+    )
+    max_consecutive_failures: Mapped[int] = mapped_column(
+        Integer,
+        default=3,
+        nullable=False
+    )
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+    # Relationships
+    cluster: Mapped[Optional["Cluster"]] = relationship(
+        "Cluster",
+        foreign_keys=[cluster_id]
+    )
+    team: Mapped[Optional["Team"]] = relationship(
+        "Team",
+        foreign_keys=[team_id]
+    )
+    created_by: Mapped[Optional["User"]] = relationship(
+        "User",
+        foreign_keys=[created_by_id]
+    )
+    schedule_runs: Mapped[list["ScheduleRun"]] = relationship(
+        "ScheduleRun",
+        back_populates="schedule",
+        cascade="all, delete-orphan",
+        lazy="dynamic"
+    )
+
+    # Indexes
+    __table_args__ = (
+        Index("ix_schedules_name", "name"),
+        Index("ix_schedules_status", "status"),
+        Index("ix_schedules_team_id", "team_id"),
+        Index("ix_schedules_cluster_id", "cluster_id"),
+        Index("ix_schedules_next_run_at", "next_run_at"),
+        UniqueConstraint("name", "team_id", name="uq_schedule_name_team"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<Schedule {self.name} cron={self.cron_expression} status={self.status}>"
+
+    def to_dict(self) -> dict:
+        """Convert model to dictionary representation."""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "cron_expression": self.cron_expression,
+            "timezone": self.timezone,
+            "status": self.status.value if self.status else None,
+            "manifest_source_path": self.manifest_source_path,
+            "lookback_days": self.lookback_days,
+            "cluster_id": self.cluster_id,
+            "team_id": self.team_id,
+            "created_by_id": self.created_by_id,
+            "settings": self.settings,
+            "last_run_at": self.last_run_at.isoformat() if self.last_run_at else None,
+            "next_run_at": self.next_run_at.isoformat() if self.next_run_at else None,
+            "run_count": self.run_count,
+            "failure_count": self.failure_count,
+            "consecutive_failures": self.consecutive_failures,
+            "max_consecutive_failures": self.max_consecutive_failures,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+
+class ScheduleRun(db.Model):
+    """
+    Record of a scheduled optimization run execution.
+
+    Tracks the status and outcome of each scheduled optimization run.
+    """
+    __tablename__ = "schedule_runs"
+
+    id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
+        default=generate_uuid
+    )
+    schedule_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("schedules.id", ondelete="CASCADE"),
+        nullable=False
+    )
+    optimization_run_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("optimization_runs.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    status: Mapped[ScheduleRunStatus] = mapped_column(
+        SQLEnum(ScheduleRunStatus, native_enum=False),
+        default=ScheduleRunStatus.PENDING,
+        nullable=False
+    )
+    trigger_type: Mapped[ScheduleTriggerType] = mapped_column(
+        SQLEnum(ScheduleTriggerType, native_enum=False),
+        default=ScheduleTriggerType.SCHEDULED,
+        nullable=False
+    )
+    triggered_by_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    scheduled_time: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False
+    )
+    started_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    completed_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    duration_seconds: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        nullable=True
+    )
+    error_message: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    result_summary: Mapped[dict] = mapped_column(
+        JSON,
+        nullable=True,
+        default=dict
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+    # Relationships
+    schedule: Mapped["Schedule"] = relationship(
+        "Schedule",
+        back_populates="schedule_runs"
+    )
+    optimization_run: Mapped[Optional["OptimizationRun"]] = relationship(
+        "OptimizationRun",
+        foreign_keys=[optimization_run_id]
+    )
+    triggered_by: Mapped[Optional["User"]] = relationship(
+        "User",
+        foreign_keys=[triggered_by_id]
+    )
+
+    # Indexes
+    __table_args__ = (
+        Index("ix_schedule_runs_schedule_id", "schedule_id"),
+        Index("ix_schedule_runs_status", "status"),
+        Index("ix_schedule_runs_scheduled_time", "scheduled_time"),
+        Index("ix_schedule_runs_started_at", "started_at"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<ScheduleRun {self.id} schedule={self.schedule_id} status={self.status}>"
+
+    def to_dict(self) -> dict:
+        """Convert model to dictionary representation."""
+        return {
+            "id": self.id,
+            "schedule_id": self.schedule_id,
+            "optimization_run_id": self.optimization_run_id,
+            "status": self.status.value if self.status else None,
+            "trigger_type": self.trigger_type.value if self.trigger_type else None,
+            "triggered_by_id": self.triggered_by_id,
+            "scheduled_time": self.scheduled_time.isoformat() if self.scheduled_time else None,
+            "started_at": self.started_at.isoformat() if self.started_at else None,
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "duration_seconds": self.duration_seconds,
+            "error_message": self.error_message,
+            "result_summary": self.result_summary,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

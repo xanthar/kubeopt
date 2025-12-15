@@ -13,6 +13,7 @@ from kubeopt_ai.routes.auth import auth_bp
 from kubeopt_ai.routes.clusters import clusters_bp
 from kubeopt_ai.routes.history import history_bp
 from kubeopt_ai.routes.docs import docs_bp
+from kubeopt_ai.routes.schedules import schedules_bp
 
 __all__ = [
     "health_bp",
@@ -24,4 +25,5 @@ __all__ = [
     "clusters_bp",
     "history_bp",
     "docs_bp",
+    "schedules_bp",
 ]
