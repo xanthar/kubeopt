@@ -2,140 +2,6 @@
   "current_phase": "Phase 1",
   "features": [
     {
-      "id": "F018",
-      "name": "RBAC and Multi-Tenancy",
-      "status": "pending",
-      "priority": 18,
-      "tests_passing": false,
-      "e2e_validated": false,
-      "subtasks": [
-        {
-          "name": "Add User, Team, Role, Permission models",
-          "done": false
-        },
-        {
-          "name": "Create Alembic migration for auth tables",
-          "done": false
-        },
-        {
-          "name": "Add flask-jwt-extended to requirements",
-          "done": false
-        },
-        {
-          "name": "Implement AuthService with login, logout, refresh",
-          "done": false
-        },
-        {
-          "name": "Create jwt_required and require_permission decorators",
-          "done": false
-        },
-        {
-          "name": "Create auth blueprint with API endpoints",
-          "done": false
-        },
-        {
-          "name": "Add team_id FK to OptimizationRun for multi-tenancy",
-          "done": false
-        },
-        {
-          "name": "Write comprehensive auth tests",
-          "done": false
-        }
-      ],
-      "notes": "",
-      "created_at": "2025-12-15T17:45:28.173539+00:00",
-      "completed_at": null,
-      "blocked_reason": null
-    },
-    {
-      "id": "F019",
-      "name": "Multi-Cluster Support",
-      "status": "pending",
-      "priority": 19,
-      "tests_passing": false,
-      "e2e_validated": false,
-      "subtasks": [
-        {
-          "name": "Add Cluster model with connection config",
-          "done": false
-        },
-        {
-          "name": "Add cluster_id FK to OptimizationRun, WorkloadSnapshot",
-          "done": false
-        },
-        {
-          "name": "Create Alembic migration for clusters table",
-          "done": false
-        },
-        {
-          "name": "Implement ClusterManager with register, list, test methods",
-          "done": false
-        },
-        {
-          "name": "Create clusters blueprint with CRUD endpoints",
-          "done": false
-        },
-        {
-          "name": "Update K8sScanner to accept cluster context",
-          "done": false
-        },
-        {
-          "name": "Update MetricsCollector for per-cluster Prometheus URLs",
-          "done": false
-        },
-        {
-          "name": "Write cluster management tests",
-          "done": false
-        }
-      ],
-      "notes": "",
-      "created_at": "2025-12-15T17:45:38.948479+00:00",
-      "completed_at": null,
-      "blocked_reason": null
-    },
-    {
-      "id": "F020",
-      "name": "Historical Trend Analysis",
-      "status": "pending",
-      "priority": 20,
-      "tests_passing": false,
-      "e2e_validated": false,
-      "subtasks": [
-        {
-          "name": "Add MetricsHistory model for time-series storage",
-          "done": false
-        },
-        {
-          "name": "Add TrendAnalysis model for analysis results",
-          "done": false
-        },
-        {
-          "name": "Create Alembic migration with indexes",
-          "done": false
-        },
-        {
-          "name": "Implement HistoryCollector for background collection",
-          "done": false
-        },
-        {
-          "name": "Implement TrendAnalyzer with statistical analysis",
-          "done": false
-        },
-        {
-          "name": "Create history blueprint with API endpoints",
-          "done": false
-        },
-        {
-          "name": "Write trend analysis tests",
-          "done": false
-        }
-      ],
-      "notes": "",
-      "created_at": "2025-12-15T17:45:49.072543+00:00",
-      "completed_at": null,
-      "blocked_reason": null
-    },
-    {
       "id": "F021",
       "name": "Scheduled Optimization Runs",
       "status": "pending",
@@ -452,44 +318,6 @@
       ],
       "notes": "",
       "created_at": "2025-12-15T17:47:02.327450+00:00",
-      "completed_at": null,
-      "blocked_reason": null
-    },
-    {
-      "id": "F029",
-      "name": "OpenAPI Swagger Documentation",
-      "status": "pending",
-      "priority": 29,
-      "tests_passing": false,
-      "e2e_validated": false,
-      "subtasks": [
-        {
-          "name": "Add apispec to requirements.txt",
-          "done": false
-        },
-        {
-          "name": "Create OpenAPI spec generator",
-          "done": false
-        },
-        {
-          "name": "Add OpenAPI decorators to all route functions",
-          "done": false
-        },
-        {
-          "name": "Create /api/docs Swagger UI endpoint",
-          "done": false
-        },
-        {
-          "name": "Create /api/redoc endpoint",
-          "done": false
-        },
-        {
-          "name": "Write spec validation tests",
-          "done": false
-        }
-      ],
-      "notes": "",
-      "created_at": "2025-12-15T17:47:17.177510+00:00",
       "completed_at": null,
       "blocked_reason": null
     },
@@ -1100,6 +928,178 @@
       "notes": "",
       "created_at": "2025-12-15T17:45:14.844936+00:00",
       "completed_at": "2025-12-15T17:48:07.716733+00:00",
+      "blocked_reason": null
+    },
+    {
+      "id": "F018",
+      "name": "RBAC and Multi-Tenancy",
+      "status": "completed",
+      "priority": 18,
+      "tests_passing": true,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add User, Team, Role, Permission models",
+          "done": true
+        },
+        {
+          "name": "Create Alembic migration for auth tables",
+          "done": true
+        },
+        {
+          "name": "Add flask-jwt-extended to requirements",
+          "done": true
+        },
+        {
+          "name": "Implement AuthService with login, logout, refresh",
+          "done": true
+        },
+        {
+          "name": "Create jwt_required and require_permission decorators",
+          "done": true
+        },
+        {
+          "name": "Create auth blueprint with API endpoints",
+          "done": true
+        },
+        {
+          "name": "Add team_id FK to OptimizationRun for multi-tenancy",
+          "done": true
+        },
+        {
+          "name": "Write comprehensive auth tests",
+          "done": true
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:45:28.173539+00:00",
+      "completed_at": "2025-12-15T18:13:44.015387+00:00",
+      "blocked_reason": null
+    },
+    {
+      "id": "F019",
+      "name": "Multi-Cluster Support",
+      "status": "completed",
+      "priority": 19,
+      "tests_passing": true,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add Cluster model with connection config",
+          "done": true
+        },
+        {
+          "name": "Add cluster_id FK to OptimizationRun, WorkloadSnapshot",
+          "done": true
+        },
+        {
+          "name": "Create Alembic migration for clusters table",
+          "done": true
+        },
+        {
+          "name": "Implement ClusterManager with register, list, test methods",
+          "done": true
+        },
+        {
+          "name": "Create clusters blueprint with CRUD endpoints",
+          "done": true
+        },
+        {
+          "name": "Update K8sScanner to accept cluster context",
+          "done": true
+        },
+        {
+          "name": "Update MetricsCollector for per-cluster Prometheus URLs",
+          "done": true
+        },
+        {
+          "name": "Write cluster management tests",
+          "done": true
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:45:38.948479+00:00",
+      "completed_at": "2025-12-15T19:00:00.889696+00:00",
+      "blocked_reason": null
+    },
+    {
+      "id": "F020",
+      "name": "Historical Trend Analysis",
+      "status": "completed",
+      "priority": 20,
+      "tests_passing": true,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add MetricsHistory model for time-series storage",
+          "done": true
+        },
+        {
+          "name": "Add TrendAnalysis model for analysis results",
+          "done": true
+        },
+        {
+          "name": "Create Alembic migration with indexes",
+          "done": true
+        },
+        {
+          "name": "Implement HistoryCollector for background collection",
+          "done": true
+        },
+        {
+          "name": "Implement TrendAnalyzer with statistical analysis",
+          "done": true
+        },
+        {
+          "name": "Create history blueprint with API endpoints",
+          "done": true
+        },
+        {
+          "name": "Write trend analysis tests",
+          "done": true
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:45:49.072543+00:00",
+      "completed_at": "2025-12-15T19:00:01.215855+00:00",
+      "blocked_reason": null
+    },
+    {
+      "id": "F029",
+      "name": "OpenAPI Swagger Documentation",
+      "status": "completed",
+      "priority": 29,
+      "tests_passing": true,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add apispec to requirements.txt",
+          "done": true
+        },
+        {
+          "name": "Create OpenAPI spec generator",
+          "done": true
+        },
+        {
+          "name": "Add OpenAPI decorators to all route functions",
+          "done": true
+        },
+        {
+          "name": "Create /api/docs Swagger UI endpoint",
+          "done": true
+        },
+        {
+          "name": "Create /api/redoc endpoint",
+          "done": true
+        },
+        {
+          "name": "Write spec validation tests",
+          "done": true
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:17.177510+00:00",
+      "completed_at": "2025-12-15T19:00:01.528095+00:00",
       "blocked_reason": null
     }
   ],

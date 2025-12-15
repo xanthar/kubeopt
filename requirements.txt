@@ -25,6 +25,15 @@ ruamel.yaml>=0.18.0
 # Utilities
 python-dotenv>=1.0.0
 
+# API Security & Rate Limiting
+flask-limiter>=3.5.0
+flask-jwt-extended>=4.6.0
+bcrypt>=4.1.0
+
+# OpenAPI Documentation
+flasgger>=0.9.7
+apispec>=6.3.0
+
 # Development & Testing
 pytest>=7.4.0
 pytest-cov>=4.1.0

@@ -65,12 +65,22 @@ def register_blueprints(app: Flask) -> None:
     from kubeopt_ai.routes.insights import insights_bp
     from kubeopt_ai.routes.realtime import realtime_bp
     from kubeopt_ai.routes.webhooks import webhooks_bp
+    from kubeopt_ai.routes.audit import audit_bp
+    from kubeopt_ai.routes.auth import auth_bp
+    from kubeopt_ai.routes.clusters import clusters_bp
+    from kubeopt_ai.routes.history import history_bp
+    from kubeopt_ai.routes.docs import docs_bp
 
     app.register_blueprint(health_bp)
     app.register_blueprint(optimize_bp, url_prefix="/api/v1")
     app.register_blueprint(insights_bp, url_prefix="/api/v1")
     app.register_blueprint(realtime_bp, url_prefix="/api/v1")
     app.register_blueprint(webhooks_bp, url_prefix="/api/v1")
+    app.register_blueprint(audit_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(clusters_bp)  # F019: Multi-cluster support
+    app.register_blueprint(history_bp)   # F020: Historical trends
+    app.register_blueprint(docs_bp)      # F029: OpenAPI documentation
 
 
 def register_error_handlers(app: Flask) -> None:
@@ -99,6 +109,16 @@ def register_error_handlers(app: Flask) -> None:
             "details": None,
             "trace_id": None
         }), 404
+
+    @app.errorhandler(429)
+    def rate_limit_exceeded(error):
+        app.logger.warning(f"Rate limit exceeded: {error}")
+        return jsonify({
+            "code": "RATE_LIMIT_EXCEEDED",
+            "message": "Too many requests. Please slow down.",
+            "details": str(error.description) if hasattr(error, 'description') else None,
+            "trace_id": None
+        }), 429
 
     @app.errorhandler(500)
     def internal_error(error):
