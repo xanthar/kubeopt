@@ -63,10 +63,14 @@ def register_blueprints(app: Flask) -> None:
     from kubeopt_ai.routes.health import health_bp
     from kubeopt_ai.routes.optimize import optimize_bp
     from kubeopt_ai.routes.insights import insights_bp
+    from kubeopt_ai.routes.realtime import realtime_bp
+    from kubeopt_ai.routes.webhooks import webhooks_bp
 
     app.register_blueprint(health_bp)
     app.register_blueprint(optimize_bp, url_prefix="/api/v1")
     app.register_blueprint(insights_bp, url_prefix="/api/v1")
+    app.register_blueprint(realtime_bp, url_prefix="/api/v1")
+    app.register_blueprint(webhooks_bp, url_prefix="/api/v1")
 
 
 def register_error_handlers(app: Flask) -> None:

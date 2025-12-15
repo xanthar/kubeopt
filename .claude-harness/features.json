@@ -78,12 +78,28 @@
       "status": "completed",
       "priority": 11,
       "subtasks": [
-        "Cloud pricing models for compute resources",
-        "Cost calculator service with multi-provider support",
-        "Savings projection based on current vs recommended resources",
-        "API endpoints for cost analysis",
-        "Unit tests"
-      ]
+        {
+          "name": "Cloud pricing models for compute resources",
+          "done": true
+        },
+        {
+          "name": "Cost calculator service with multi-provider support",
+          "done": true
+        },
+        {
+          "name": "Savings projection based on current vs recommended resources",
+          "done": true
+        },
+        {
+          "name": "API endpoints for cost analysis",
+          "done": true
+        },
+        {
+          "name": "Unit tests",
+          "done": true
+        }
+      ],
+      "tests_pass": true
     },
     {
       "id": "F012",
@@ -92,15 +108,178 @@
       "status": "completed",
       "priority": 12,
       "subtasks": [
-        "Statistical anomaly detection algorithms (Z-score, IQR, rolling averages)",
-        "Pattern classification (memory leak, CPU spike, gradual drift)",
-        "Alert severity scoring and thresholds",
-        "Anomaly detection service with Prometheus integration",
-        "API endpoints for anomaly queries",
-        "Unit tests"
-      ]
+        {
+          "name": "Statistical anomaly detection algorithms (Z-score, IQR, rolling averages)",
+          "done": true
+        },
+        {
+          "name": "Pattern classification (memory leak, CPU spike, gradual drift)",
+          "done": true
+        },
+        {
+          "name": "Alert severity scoring and thresholds",
+          "done": true
+        },
+        {
+          "name": "Anomaly detection service with Prometheus integration",
+          "done": true
+        },
+        {
+          "name": "API endpoints for anomaly queries",
+          "done": true
+        },
+        {
+          "name": "Unit tests",
+          "done": true
+        }
+      ],
+      "tests_pass": true
     }
   ],
-  "completed": ["F001", "F002", "F003", "F004", "F005", "F006", "F007", "F008", "F009", "F010", "F011", "F012"],
+  "completed": [
+    "F001",
+    "F002",
+    "F003",
+    "F004",
+    "F005",
+    "F006",
+    "F007",
+    "F008",
+    "F009",
+    "F010",
+    "F011",
+    "F012",
+    {
+      "id": "F013",
+      "name": "Integration Tests for Insights API",
+      "description": "Comprehensive integration tests for the cost projection and anomaly detection API endpoints. Validates end-to-end flows with database persistence and error handling.",
+      "status": "completed",
+      "priority": 13,
+      "subtasks": [
+        {
+          "name": "Test fixtures and factory functions for insights endpoints",
+          "done": true
+        },
+        {
+          "name": "Integration tests for POST /api/v1/insights/cost",
+          "done": true
+        },
+        {
+          "name": "Integration tests for GET /api/v1/insights/cost/<run_id>",
+          "done": true
+        },
+        {
+          "name": "Integration tests for POST /api/v1/insights/anomalies",
+          "done": true
+        },
+        {
+          "name": "Integration tests for GET /api/v1/insights/anomalies/<run_id>",
+          "done": true
+        },
+        {
+          "name": "Integration tests for GET /api/v1/insights/summary/<run_id>",
+          "done": true
+        },
+        {
+          "name": "Error handling and edge case tests",
+          "done": true
+        },
+        {
+          "name": "Database rollback and cleanup tests",
+          "done": true
+        }
+      ],
+      "tests_pass": false,
+      "blocked_reason": null,
+      "tests_passing": true,
+      "completed_at": "2025-12-15T14:11:24.343836+00:00"
+    },
+    {
+      "id": "F014",
+      "name": "Prometheus Real-time Integration",
+      "description": "Real-time metrics streaming from Prometheus for trend-based anomaly detection. Enables continuous monitoring with configurable time windows and live anomaly alerts.",
+      "status": "completed",
+      "priority": 14,
+      "subtasks": [
+        {
+          "name": "Prometheus query templates for real-time metrics",
+          "done": true
+        },
+        {
+          "name": "Streaming metrics collector service",
+          "done": true
+        },
+        {
+          "name": "Real-time anomaly detection pipeline",
+          "done": true
+        },
+        {
+          "name": "Trend analysis with configurable time windows",
+          "done": true
+        },
+        {
+          "name": "Background task scheduler for continuous monitoring",
+          "done": true
+        },
+        {
+          "name": "API endpoints for real-time anomaly status",
+          "done": true
+        },
+        {
+          "name": "Unit tests for real-time components",
+          "done": true
+        }
+      ],
+      "tests_pass": false,
+      "blocked_reason": null,
+      "tests_passing": true,
+      "completed_at": "2025-12-15T14:16:45.694762+00:00"
+    },
+    {
+      "id": "F015",
+      "name": "Webhook Notification System",
+      "description": "Webhook and notification support for anomaly alerts. Supports Slack, generic HTTP webhooks, and customizable alert templates with retry logic.",
+      "status": "completed",
+      "priority": 15,
+      "subtasks": [
+        {
+          "name": "Webhook configuration database model",
+          "done": true
+        },
+        {
+          "name": "Notification dispatcher service",
+          "done": true
+        },
+        {
+          "name": "Webhook delivery with exponential backoff retry",
+          "done": true
+        },
+        {
+          "name": "Slack webhook format support",
+          "done": true
+        },
+        {
+          "name": "Generic HTTP webhook support",
+          "done": true
+        },
+        {
+          "name": "Alert templates and customization",
+          "done": true
+        },
+        {
+          "name": "API endpoints for webhook CRUD operations",
+          "done": true
+        },
+        {
+          "name": "Unit tests for notification system",
+          "done": true
+        }
+      ],
+      "tests_pass": false,
+      "blocked_reason": null,
+      "tests_passing": true,
+      "completed_at": "2025-12-15T14:21:21.129481+00:00"
+    }
+  ],
   "blocked": []
 }

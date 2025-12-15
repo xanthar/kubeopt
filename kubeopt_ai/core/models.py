@@ -34,6 +34,22 @@ class RunStatus(str, Enum):
     FAILED = "failed"
 
 
+class WebhookType(str, Enum):
+    """Types of webhooks supported."""
+    SLACK = "slack"
+    GENERIC = "generic"
+    TEAMS = "teams"
+    DISCORD = "discord"
+
+
+class WebhookStatus(str, Enum):
+    """Status of webhook delivery."""
+    PENDING = "pending"
+    DELIVERED = "delivered"
+    FAILED = "failed"
+    RETRYING = "retrying"
+
+
 class WorkloadKind(str, Enum):
     """Kubernetes workload types supported by the optimizer."""
     DEPLOYMENT = "Deployment"
@@ -269,4 +285,198 @@ class Suggestion(db.Model):
             "proposed_config": self.proposed_config,
             "reasoning": self.reasoning,
             "diff_text": self.diff_text,
+        }
+
+
+class WebhookConfig(db.Model):
+    """
+    Configuration for a webhook endpoint.
+
+    Stores webhook URL, type, and customization options for
+    anomaly alert notifications.
+    """
+    __tablename__ = "webhook_configs"
+
+    id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
+        default=generate_uuid
+    )
+    name: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False
+    )
+    webhook_type: Mapped[WebhookType] = mapped_column(
+        SQLEnum(WebhookType, native_enum=False),
+        default=WebhookType.GENERIC,
+        nullable=False
+    )
+    url: Mapped[str] = mapped_column(
+        String(2048),
+        nullable=False
+    )
+    secret: Mapped[Optional[str]] = mapped_column(
+        String(256),
+        nullable=True
+    )
+    enabled: Mapped[bool] = mapped_column(
+        default=True,
+        nullable=False
+    )
+    severity_filter: Mapped[Optional[str]] = mapped_column(
+        String(50),
+        nullable=True
+    )
+    custom_headers: Mapped[dict] = mapped_column(
+        JSON,
+        nullable=True,
+        default=dict
+    )
+    template: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+    # Relationships
+    delivery_logs: Mapped[list["WebhookDeliveryLog"]] = relationship(
+        "WebhookDeliveryLog",
+        back_populates="webhook_config",
+        cascade="all, delete-orphan",
+        lazy="dynamic"
+    )
+
+    # Indexes
+    __table_args__ = (
+        Index("ix_webhook_configs_enabled", "enabled"),
+        Index("ix_webhook_configs_webhook_type", "webhook_type"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<WebhookConfig {self.name} type={self.webhook_type}>"
+
+    def to_dict(self) -> dict:
+        """Convert model to dictionary representation."""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "webhook_type": self.webhook_type.value if self.webhook_type else None,
+            "url": self.url,
+            "enabled": self.enabled,
+            "severity_filter": self.severity_filter,
+            "custom_headers": self.custom_headers,
+            "template": self.template,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+
+class WebhookDeliveryLog(db.Model):
+    """
+    Log of webhook delivery attempts.
+
+    Tracks delivery status, retries, and responses for webhook notifications.
+    """
+    __tablename__ = "webhook_delivery_logs"
+
+    id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
+        default=generate_uuid
+    )
+    webhook_config_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("webhook_configs.id", ondelete="CASCADE"),
+        nullable=False
+    )
+    alert_id: Mapped[str] = mapped_column(
+        String(36),
+        nullable=False
+    )
+    status: Mapped[WebhookStatus] = mapped_column(
+        SQLEnum(WebhookStatus, native_enum=False),
+        default=WebhookStatus.PENDING,
+        nullable=False
+    )
+    attempt_count: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False
+    )
+    max_attempts: Mapped[int] = mapped_column(
+        Integer,
+        default=3,
+        nullable=False
+    )
+    last_attempt_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    next_retry_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    response_status_code: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        nullable=True
+    )
+    response_body: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    error_message: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    payload: Mapped[dict] = mapped_column(
+        JSON,
+        nullable=True,
+        default=dict
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+    # Relationships
+    webhook_config: Mapped["WebhookConfig"] = relationship(
+        "WebhookConfig",
+        back_populates="delivery_logs"
+    )
+
+    # Indexes
+    __table_args__ = (
+        Index("ix_webhook_delivery_logs_webhook_config_id", "webhook_config_id"),
+        Index("ix_webhook_delivery_logs_status", "status"),
+        Index("ix_webhook_delivery_logs_next_retry_at", "next_retry_at"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<WebhookDeliveryLog {self.id} status={self.status}>"
+
+    def to_dict(self) -> dict:
+        """Convert model to dictionary representation."""
+        return {
+            "id": self.id,
+            "webhook_config_id": self.webhook_config_id,
+            "alert_id": self.alert_id,
+            "status": self.status.value if self.status else None,
+            "attempt_count": self.attempt_count,
+            "max_attempts": self.max_attempts,
+            "last_attempt_at": self.last_attempt_at.isoformat() if self.last_attempt_at else None,
+            "next_retry_at": self.next_retry_at.isoformat() if self.next_retry_at else None,
+            "response_status_code": self.response_status_code,
+            "error_message": self.error_message,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
         }
