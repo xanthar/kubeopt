@@ -157,5 +157,20 @@
       "Report file paths as absolute paths",
       "Include specific line numbers when relevant"
     ]
+  },
+  "orchestration": {
+    "enabled": true,
+    "max_delegations_per_feature": 5,
+    "max_delegations_per_session": 20,
+    "delegation_cooldown_seconds": 60,
+    "max_parallel_delegations": 3,
+    "context_threshold": 0.5,
+    "min_subtasks_for_delegation": 1,
+    "auto_delegate": false,
+    "require_user_confirmation": true,
+    "priority_threshold": 5
+  },
+  "discoveries": {
+    "enabled": true
   }
 }

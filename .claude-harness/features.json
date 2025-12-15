@@ -2,6 +2,772 @@
   "current_phase": "Phase 1",
   "features": [
     {
+      "id": "F018",
+      "name": "RBAC and Multi-Tenancy",
+      "status": "pending",
+      "priority": 18,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add User, Team, Role, Permission models",
+          "done": false
+        },
+        {
+          "name": "Create Alembic migration for auth tables",
+          "done": false
+        },
+        {
+          "name": "Add flask-jwt-extended to requirements",
+          "done": false
+        },
+        {
+          "name": "Implement AuthService with login, logout, refresh",
+          "done": false
+        },
+        {
+          "name": "Create jwt_required and require_permission decorators",
+          "done": false
+        },
+        {
+          "name": "Create auth blueprint with API endpoints",
+          "done": false
+        },
+        {
+          "name": "Add team_id FK to OptimizationRun for multi-tenancy",
+          "done": false
+        },
+        {
+          "name": "Write comprehensive auth tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:45:28.173539+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F019",
+      "name": "Multi-Cluster Support",
+      "status": "pending",
+      "priority": 19,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add Cluster model with connection config",
+          "done": false
+        },
+        {
+          "name": "Add cluster_id FK to OptimizationRun, WorkloadSnapshot",
+          "done": false
+        },
+        {
+          "name": "Create Alembic migration for clusters table",
+          "done": false
+        },
+        {
+          "name": "Implement ClusterManager with register, list, test methods",
+          "done": false
+        },
+        {
+          "name": "Create clusters blueprint with CRUD endpoints",
+          "done": false
+        },
+        {
+          "name": "Update K8sScanner to accept cluster context",
+          "done": false
+        },
+        {
+          "name": "Update MetricsCollector for per-cluster Prometheus URLs",
+          "done": false
+        },
+        {
+          "name": "Write cluster management tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:45:38.948479+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F020",
+      "name": "Historical Trend Analysis",
+      "status": "pending",
+      "priority": 20,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add MetricsHistory model for time-series storage",
+          "done": false
+        },
+        {
+          "name": "Add TrendAnalysis model for analysis results",
+          "done": false
+        },
+        {
+          "name": "Create Alembic migration with indexes",
+          "done": false
+        },
+        {
+          "name": "Implement HistoryCollector for background collection",
+          "done": false
+        },
+        {
+          "name": "Implement TrendAnalyzer with statistical analysis",
+          "done": false
+        },
+        {
+          "name": "Create history blueprint with API endpoints",
+          "done": false
+        },
+        {
+          "name": "Write trend analysis tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:45:49.072543+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F021",
+      "name": "Scheduled Optimization Runs",
+      "status": "pending",
+      "priority": 21,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add APScheduler to requirements.txt",
+          "done": false
+        },
+        {
+          "name": "Add Schedule and ScheduleRun models",
+          "done": false
+        },
+        {
+          "name": "Create Alembic migration",
+          "done": false
+        },
+        {
+          "name": "Implement SchedulerService with CRUD operations",
+          "done": false
+        },
+        {
+          "name": "Add cron expression validation to schemas",
+          "done": false
+        },
+        {
+          "name": "Create schedules blueprint with API endpoints",
+          "done": false
+        },
+        {
+          "name": "Write scheduler tests with time mocking",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:46:05.870820+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F022",
+      "name": "Recommendation Auto-Apply",
+      "status": "pending",
+      "priority": 22,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add ApplyRequest and ApplyPolicy models",
+          "done": false
+        },
+        {
+          "name": "Create Alembic migration",
+          "done": false
+        },
+        {
+          "name": "Implement ApplyService with K8s patching logic",
+          "done": false
+        },
+        {
+          "name": "Implement rollback capability with manifest versioning",
+          "done": false
+        },
+        {
+          "name": "Add guardrails for max change percent and blackout windows",
+          "done": false
+        },
+        {
+          "name": "Integrate with audit logging",
+          "done": false
+        },
+        {
+          "name": "Create apply blueprint with API endpoints",
+          "done": false
+        },
+        {
+          "name": "Write tests including failure and rollback scenarios",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:46:06.308932+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F023",
+      "name": "Recommendation History and Tracking",
+      "status": "pending",
+      "priority": 23,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add status fields to Suggestion model",
+          "done": false
+        },
+        {
+          "name": "Create Alembic migration",
+          "done": false
+        },
+        {
+          "name": "Implement RecommendationTracker service",
+          "done": false
+        },
+        {
+          "name": "Add savings-realized calculation",
+          "done": false
+        },
+        {
+          "name": "Create recommendations blueprint with API endpoints",
+          "done": false
+        },
+        {
+          "name": "Write tracking tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:46:06.729115+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F024",
+      "name": "Namespace-Level Budgets",
+      "status": "pending",
+      "priority": 24,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add NamespaceBudget and BudgetAlert models",
+          "done": false
+        },
+        {
+          "name": "Create Alembic migration",
+          "done": false
+        },
+        {
+          "name": "Extend cost_engine.py for namespace-level costs",
+          "done": false
+        },
+        {
+          "name": "Implement BudgetService with check and alert methods",
+          "done": false
+        },
+        {
+          "name": "Integrate budget alerts with webhook notifications",
+          "done": false
+        },
+        {
+          "name": "Create budgets blueprint with API endpoints",
+          "done": false
+        },
+        {
+          "name": "Write budget service tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:00.763638+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F025",
+      "name": "Rightsizing Confidence Scoring",
+      "status": "pending",
+      "priority": 25,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add scikit-learn to requirements.txt",
+          "done": false
+        },
+        {
+          "name": "Add SuggestionOutcome and ConfidenceModel models",
+          "done": false
+        },
+        {
+          "name": "Create Alembic migration",
+          "done": false
+        },
+        {
+          "name": "Implement ConfidenceScorer with train and predict methods",
+          "done": false
+        },
+        {
+          "name": "Create training pipeline from historical outcomes",
+          "done": false
+        },
+        {
+          "name": "Create confidence blueprint with API endpoints",
+          "done": false
+        },
+        {
+          "name": "Write ML pipeline tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:01.310228+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F026",
+      "name": "Spot Instance Recommendations",
+      "status": "pending",
+      "priority": 26,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add workload classification logic",
+          "done": false
+        },
+        {
+          "name": "Implement SpotAnalyzer with scoring",
+          "done": false
+        },
+        {
+          "name": "Add spot pricing to cost_engine.py",
+          "done": false
+        },
+        {
+          "name": "Update LLM prompts for spot recommendations",
+          "done": false
+        },
+        {
+          "name": "Add spot_recommendation field to insights response",
+          "done": false
+        },
+        {
+          "name": "Write spot analyzer tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:01.653870+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F027",
+      "name": "Network Cost Attribution",
+      "status": "pending",
+      "priority": 27,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add NetworkCostRecord model",
+          "done": false
+        },
+        {
+          "name": "Create Alembic migration",
+          "done": false
+        },
+        {
+          "name": "Add PromQL queries for network metrics",
+          "done": false
+        },
+        {
+          "name": "Implement NetworkCostCalculator",
+          "done": false
+        },
+        {
+          "name": "Create network blueprint with API endpoints",
+          "done": false
+        },
+        {
+          "name": "Write network cost tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:01.975936+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F028",
+      "name": "Carbon Footprint Estimation",
+      "status": "pending",
+      "priority": 28,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add cloud region carbon intensity data",
+          "done": false
+        },
+        {
+          "name": "Implement CarbonCalculator",
+          "done": false
+        },
+        {
+          "name": "Add carbon_footprint field to cost projection",
+          "done": false
+        },
+        {
+          "name": "Add carbon-aware scheduling recommendations",
+          "done": false
+        },
+        {
+          "name": "Write carbon calculator tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:02.327450+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F029",
+      "name": "OpenAPI Swagger Documentation",
+      "status": "pending",
+      "priority": 29,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add apispec to requirements.txt",
+          "done": false
+        },
+        {
+          "name": "Create OpenAPI spec generator",
+          "done": false
+        },
+        {
+          "name": "Add OpenAPI decorators to all route functions",
+          "done": false
+        },
+        {
+          "name": "Create /api/docs Swagger UI endpoint",
+          "done": false
+        },
+        {
+          "name": "Create /api/redoc endpoint",
+          "done": false
+        },
+        {
+          "name": "Write spec validation tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:17.177510+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F030",
+      "name": "Web Dashboard",
+      "status": "pending",
+      "priority": 30,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Initialize React project with Vite and TypeScript",
+          "done": false
+        },
+        {
+          "name": "Implement JWT authentication flow",
+          "done": false
+        },
+        {
+          "name": "Create dashboard layout with navigation",
+          "done": false
+        },
+        {
+          "name": "Build cost overview page with charts",
+          "done": false
+        },
+        {
+          "name": "Create optimization run management pages",
+          "done": false
+        },
+        {
+          "name": "Implement anomaly timeline visualization",
+          "done": false
+        },
+        {
+          "name": "Create cluster management UI",
+          "done": false
+        },
+        {
+          "name": "Build recommendation review workflow UI",
+          "done": false
+        },
+        {
+          "name": "Add budget monitoring dashboard",
+          "done": false
+        },
+        {
+          "name": "Configure CORS and static asset serving",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:17.718711+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F031",
+      "name": "GitOps Integration",
+      "status": "pending",
+      "priority": 31,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add PyGithub and python-gitlab to requirements",
+          "done": false
+        },
+        {
+          "name": "Add GitOpsConfig model",
+          "done": false
+        },
+        {
+          "name": "Create Alembic migration",
+          "done": false
+        },
+        {
+          "name": "Implement GitOpsService with PR creation",
+          "done": false
+        },
+        {
+          "name": "Add GitHub and GitLab API clients",
+          "done": false
+        },
+        {
+          "name": "Create Flux/ArgoCD manifest generators",
+          "done": false
+        },
+        {
+          "name": "Create gitops blueprint with API endpoints",
+          "done": false
+        },
+        {
+          "name": "Write GitOps tests with mocked APIs",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:39.404100+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F032",
+      "name": "Custom Metric Sources",
+      "status": "pending",
+      "priority": 32,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add MetricSource model",
+          "done": false
+        },
+        {
+          "name": "Create Alembic migration",
+          "done": false
+        },
+        {
+          "name": "Create abstract MetricSourceClient interface",
+          "done": false
+        },
+        {
+          "name": "Implement DatadogClient",
+          "done": false
+        },
+        {
+          "name": "Implement NewRelicClient",
+          "done": false
+        },
+        {
+          "name": "Implement CloudWatchClient",
+          "done": false
+        },
+        {
+          "name": "Create metric_sources blueprint with API endpoints",
+          "done": false
+        },
+        {
+          "name": "Write integration tests with mocked APIs",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:39.855492+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F033",
+      "name": "Plugin System",
+      "status": "pending",
+      "priority": 33,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Design plugin interface for analyzers, cost models, notifications",
+          "done": false
+        },
+        {
+          "name": "Create abstract base classes in plugins/base.py",
+          "done": false
+        },
+        {
+          "name": "Implement plugin loader using importlib",
+          "done": false
+        },
+        {
+          "name": "Create plugin registration system",
+          "done": false
+        },
+        {
+          "name": "Add PluginConfig model for enabled plugins",
+          "done": false
+        },
+        {
+          "name": "Create plugins blueprint with API endpoints",
+          "done": false
+        },
+        {
+          "name": "Create sample plugins",
+          "done": false
+        },
+        {
+          "name": "Write plugin system tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:40.195346+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F034",
+      "name": "Secrets Management Integration",
+      "status": "pending",
+      "priority": 34,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add hvac and boto3 to requirements",
+          "done": false
+        },
+        {
+          "name": "Create abstract SecretsClient interface",
+          "done": false
+        },
+        {
+          "name": "Implement VaultClient",
+          "done": false
+        },
+        {
+          "name": "Implement AWSSecretsManagerClient",
+          "done": false
+        },
+        {
+          "name": "Update cluster kubeconfig retrieval",
+          "done": false
+        },
+        {
+          "name": "Add secret reference resolution to config",
+          "done": false
+        },
+        {
+          "name": "Write secrets integration tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:40.505130+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F035",
+      "name": "Backup and Disaster Recovery",
+      "status": "pending",
+      "priority": 35,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Implement BackupService with pg_dump wrapper",
+          "done": false
+        },
+        {
+          "name": "Implement S3/GCS upload capability",
+          "done": false
+        },
+        {
+          "name": "Create admin blueprint with backup endpoints",
+          "done": false
+        },
+        {
+          "name": "Add scheduled backups to scheduler",
+          "done": false
+        },
+        {
+          "name": "Add retention policy",
+          "done": false
+        },
+        {
+          "name": "Write backup and restore tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:47:40.826899+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    }
+  ],
+  "completed": [
+    {
       "id": "F001",
       "name": "Project Scaffold & Flask App",
       "description": "Scaffold project structure, config, and minimal Flask app with health endpoint",
@@ -99,7 +865,7 @@
           "done": true
         }
       ],
-      "tests_pass": true
+      "tests_passing": true
     },
     {
       "id": "F012",
@@ -133,22 +899,8 @@
           "done": true
         }
       ],
-      "tests_pass": true
-    }
-  ],
-  "completed": [
-    "F001",
-    "F002",
-    "F003",
-    "F004",
-    "F005",
-    "F006",
-    "F007",
-    "F008",
-    "F009",
-    "F010",
-    "F011",
-    "F012",
+      "tests_passing": true
+    },
     {
       "id": "F013",
       "name": "Integration Tests for Insights API",
@@ -189,8 +941,6 @@
           "done": true
         }
       ],
-      "tests_pass": false,
-      "blocked_reason": null,
       "tests_passing": true,
       "completed_at": "2025-12-15T14:11:24.343836+00:00"
     },
@@ -230,8 +980,6 @@
           "done": true
         }
       ],
-      "tests_pass": false,
-      "blocked_reason": null,
       "tests_passing": true,
       "completed_at": "2025-12-15T14:16:45.694762+00:00"
     },
@@ -275,10 +1023,84 @@
           "done": true
         }
       ],
-      "tests_pass": false,
-      "blocked_reason": null,
       "tests_passing": true,
       "completed_at": "2025-12-15T14:21:21.129481+00:00"
+    },
+    {
+      "id": "F016",
+      "name": "Audit Logging",
+      "status": "completed",
+      "priority": 16,
+      "tests_passing": true,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add AuditLog model to models.py",
+          "done": true
+        },
+        {
+          "name": "Create Alembic migration for audit_logs table",
+          "done": true
+        },
+        {
+          "name": "Implement AuditService class in audit.py",
+          "done": true
+        },
+        {
+          "name": "Create audit decorator for automatic route logging",
+          "done": true
+        },
+        {
+          "name": "Create audit blueprint with API endpoints",
+          "done": true
+        },
+        {
+          "name": "Add audit config to config.py",
+          "done": true
+        },
+        {
+          "name": "Write unit tests for audit service",
+          "done": true
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:44:10.795973+00:00",
+      "completed_at": "2025-12-15T17:47:55.905773+00:00",
+      "blocked_reason": null
+    },
+    {
+      "id": "F017",
+      "name": "Rate Limiting",
+      "status": "completed",
+      "priority": 17,
+      "tests_passing": true,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add flask-limiter to requirements.txt",
+          "done": true
+        },
+        {
+          "name": "Create rate limiter configuration in extensions.py",
+          "done": true
+        },
+        {
+          "name": "Implement rate limit decorators for API endpoints",
+          "done": true
+        },
+        {
+          "name": "Add rate limit config to config.py",
+          "done": true
+        },
+        {
+          "name": "Write rate limiting tests",
+          "done": true
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:45:14.844936+00:00",
+      "completed_at": "2025-12-15T17:48:07.716733+00:00",
+      "blocked_reason": null
     }
   ],
   "blocked": []

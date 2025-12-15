@@ -5,158 +5,82 @@ KubeOpt AI – AI-Driven Kubernetes Resource & Cost Optimizer
 
 # CLAUDE HARNESS INTEGRATION
 
-## SESSION START RITUAL (MANDATORY)
+## MANDATORY BEHAVIORS
 
-At the START of every session, BEFORE any other work:
+**Session Start:**
+1. `./scripts/init.sh` → read `progress.md` → `feature list`
+2. If pending features exist: `feature start <ID>`
+3. If NO pending features: `feature add "<name>" -s "subtask1" -s "subtask2"` then `feature start <ID>`
 
-1. **Run init script:** `./scripts/init.sh`
-2. **Read progress:** `.claude-harness/progress.md`
-3. **Check features:** `claude-harness feature list`
-4. **Pick ONE feature** with status "pending" or continue "in_progress"
-5. **Start the feature:** `claude-harness feature start <ID>` (THIS IS REQUIRED!)
+**Session End:** Update `progress.md` → `feature done <ID> <subtask>` → commit
 
-## SESSION END RITUAL (MANDATORY)
+**Rules:**
+- ONE feature at a time (start before work, complete after tests pass)
+- NEVER edit `features.json` manually - use CLI commands only
+- ALL subtasks must complete before feature completion
+- ALWAYS add new features via CLI before starting work on them
 
-Before ending a session or when context is getting full:
+## COMMANDS
 
-1. **Update progress.md** with:
-   - What was completed
-   - Current work in progress
-   - Blockers or issues
-   - Next steps for the next session
-   - Files modified
+| Action | Command |
+|--------|---------|
+| List features | `feature list` |
+| Start feature | `feature start <ID>` |
+| Complete subtask | `feature done <ID> <subtask>` |
+| Mark tests pass | `feature tests <ID>` |
+| Complete feature | `feature complete <ID>` |
+| Add feature | `feature add "<name>" [-p priority] [-s subtask]` |
+| Sync progress | `feature sync [--dry-run]` |
+| Add completed | `progress completed "<desc>"` |
+| Add WIP | `progress wip "<desc>"` |
 
-2. **Update features.json** - Mark completed features, update subtasks
+All commands: `claude-harness <command>`
 
-3. **Commit work** if appropriate
+## GIT RULES
 
-## ONE FEATURE AT A TIME
+- **Protected branches:** main, master
+- **Branch prefixes:** feat/, fix/, chore/, docs/, refactor/
+- **Blocked actions:** commit_to_protected_branch, push_to_protected_branch_without_confirmation, delete_backup_branches
+- Verify branch before commits: `git branch --show-current`
 
-- ALWAYS work on exactly ONE feature from features.json
-- Mark it as "in_progress" before starting
-- Complete ALL subtasks before marking "completed"
-- Run tests before marking as complete
+## CONFIG
 
-## FEATURE TRACKING COMMANDS (USE THESE!)
+- Port: 5000 | Health: /api/v1/health
+- Start: `python run.py`
+- Test: `pytest tests/unit/ -v` (coverage: 80%)
 
-**You MUST use these commands to track progress:**
+## DELEGATION
 
-### Starting Work on a Feature
-```bash
-claude-harness feature start <ID>    # Mark feature as in_progress
-claude-harness feature list          # See available features
-```
+Delegate to preserve context. Use Task tool for:
+- `explore`: File discovery, codebase analysis
+- `test`: Unit/E2E tests
+- `document`: READMEs, docs
+- `review`: Security, performance audits
 
-### Completing Subtasks
-```bash
-claude-harness feature done <ID> <subtask>   # Mark subtask complete (fuzzy match)
-claude-harness feature done F001 "database"  # Example: completes subtask containing "database"
-```
+Keep in main: Core implementation, user interaction, commits.
 
-### Completing Features
-```bash
-claude-harness feature complete <ID>  # Mark feature complete (after all subtasks done)
-claude-harness feature tests <ID>     # Mark tests as passing
-```
+Workflow: `delegation suggest <ID>` → Task tool → summarize (<500 words)
 
-### Syncing Progress from Files
-```bash
-claude-harness feature sync           # Auto-match modified files to subtasks
-claude-harness feature sync --dry-run # Preview what would be synced
-```
+## ORCHESTRATION
 
-### Progress Updates
-```bash
-claude-harness progress completed "Task description"  # Add completed item
-claude-harness progress wip "Current work"           # Add work in progress
-```
+Auto-workflow enabled. Commands:
+- `orchestrate run <FEATURE_ID>` - Execute workflow
+- `orchestrate plan <FEATURE_ID>` - Preview steps
+- `orchestrate status` - Current state
 
-**IMPORTANT:** Call `feature start` BEFORE working on a feature, and `feature done` AFTER completing each subtask. This ensures accurate progress tracking.
+## DISCOVERIES
 
-## GIT WORKFLOW
+Track findings and requirements. Commands:
+- `discovery add "<summary>" [-t tag]` - Record finding
+- `discovery list [--tag TAG]` - List all
+- `discovery search "<query>"` - Search
 
-- **NEVER commit to:** main, master
-- **Branch naming:** feat/, fix/, chore/, docs/, refactor/
-- **ALWAYS verify branch:** `git branch --show-current`
-- **Require confirmation** before merging to protected branches
+## CONTEXT TRACKING
 
-## BLOCKED ACTIONS
-
-The following are blocked by harness hooks:
-- commit_to_protected_branch
-- push_to_protected_branch_without_confirmation
-- delete_backup_branches
-
-## TESTING REQUIREMENTS
-
-- Unit tests: `pytest tests/unit/ -v`
-- Coverage threshold: 80%
-- Features are NOT complete until tests pass
-
-## PROJECT QUICK REFERENCE
-
-- **Port:** 5000
-- **Health endpoint:** /api/v1/health
-- **Start command:** `python run.py`
-- **Test framework:** pytest
-
----
-
-## SUBAGENT DELEGATION
-
-This project uses subagent delegation to preserve main agent context.
-
-### When to Delegate (use Task tool)
-
-**Delegate these tasks to specialized subagents:**
-- **Exploration** (`explore` subagent): File discovery, codebase analysis, pattern finding
-- **Testing** (`test` subagent): Unit tests, E2E tests, integration tests
-- **Documentation** (`document` subagent): READMEs, API docs, code comments
-- **Review** (`review` subagent): Security audits, performance analysis, code review
-
-**Keep in main agent:**
-- Core feature implementation requiring integration decisions
-- User interaction and clarification
-- Final validation and commits
-- Complex multi-file changes
-
-### Delegation Workflow
-
-1. Check subtasks with: `claude-harness delegation suggest <FEATURE_ID>`
-2. For delegatable tasks, use the Task tool with structured prompts
-3. Summarize subagent results concisely (under 500 words)
-4. Continue with main implementation
-
-### Delegation Prompt Template
-
-When using Task tool for delegation:
-
-```
-Feature: [feature_name] (ID: [feature_id])
-Subtask: [subtask_name]
-
-Context:
-- Relevant files: [list key files]
-- Current progress: [brief status]
-
-Task: [detailed description]
-
-Constraints:
-- Keep summary under 500 words
-- Report absolute file paths
-- Include line numbers when relevant
-
-Output: YAML summary with: accomplishments, files, decisions, issues, next_steps
-```
-
-### Estimated Context Savings
-
-| Task Type | Without Delegation | With Delegation | Savings |
-|-----------|-------------------|-----------------|---------|
-| Exploration | ~30K tokens | ~3-5K | 83-90% |
-| Test Writing | ~20K tokens | ~5-8K | 60-75% |
-| Documentation | ~15K tokens | ~3-5K | 67-80% |
-| Code Review | ~25K tokens | ~5-10K | 60-80% |
+Monitor token usage and generate handoffs:
+- `context show` - Current usage stats
+- `context summary` - Generate session summary
+- `context handoff` - Create handoff document
 
 ---
 
