@@ -11,9 +11,9 @@ At the START of every session, BEFORE any other work:
 
 1. **Run init script:** `./scripts/init.sh`
 2. **Read progress:** `.claude-harness/progress.md`
-3. **Check features:** `.claude-harness/features.json`
+3. **Check features:** `claude-harness feature list`
 4. **Pick ONE feature** with status "pending" or continue "in_progress"
-5. **Update feature status** to "in_progress" before starting work
+5. **Start the feature:** `claude-harness feature start <ID>` (THIS IS REQUIRED!)
 
 ## SESSION END RITUAL (MANDATORY)
 
@@ -36,7 +36,42 @@ Before ending a session or when context is getting full:
 - Mark it as "in_progress" before starting
 - Complete ALL subtasks before marking "completed"
 - Run tests before marking as complete
-- E2E validation required if e2e_enabled is true
+
+## FEATURE TRACKING COMMANDS (USE THESE!)
+
+**You MUST use these commands to track progress:**
+
+### Starting Work on a Feature
+```bash
+claude-harness feature start <ID>    # Mark feature as in_progress
+claude-harness feature list          # See available features
+```
+
+### Completing Subtasks
+```bash
+claude-harness feature done <ID> <subtask>   # Mark subtask complete (fuzzy match)
+claude-harness feature done F001 "database"  # Example: completes subtask containing "database"
+```
+
+### Completing Features
+```bash
+claude-harness feature complete <ID>  # Mark feature complete (after all subtasks done)
+claude-harness feature tests <ID>     # Mark tests as passing
+```
+
+### Syncing Progress from Files
+```bash
+claude-harness feature sync           # Auto-match modified files to subtasks
+claude-harness feature sync --dry-run # Preview what would be synced
+```
+
+### Progress Updates
+```bash
+claude-harness progress completed "Task description"  # Add completed item
+claude-harness progress wip "Current work"           # Add work in progress
+```
+
+**IMPORTANT:** Call `feature start` BEFORE working on a feature, and `feature done` AFTER completing each subtask. This ensures accurate progress tracking.
 
 ## GIT WORKFLOW
 
@@ -55,7 +90,6 @@ The following are blocked by harness hooks:
 ## TESTING REQUIREMENTS
 
 - Unit tests: `pytest tests/unit/ -v`
-- E2E tests: `pytest e2e/ -v`
 - Coverage threshold: 80%
 - Features are NOT complete until tests pass
 
@@ -68,6 +102,63 @@ The following are blocked by harness hooks:
 
 ---
 
+## SUBAGENT DELEGATION
+
+This project uses subagent delegation to preserve main agent context.
+
+### When to Delegate (use Task tool)
+
+**Delegate these tasks to specialized subagents:**
+- **Exploration** (`explore` subagent): File discovery, codebase analysis, pattern finding
+- **Testing** (`test` subagent): Unit tests, E2E tests, integration tests
+- **Documentation** (`document` subagent): READMEs, API docs, code comments
+- **Review** (`review` subagent): Security audits, performance analysis, code review
+
+**Keep in main agent:**
+- Core feature implementation requiring integration decisions
+- User interaction and clarification
+- Final validation and commits
+- Complex multi-file changes
+
+### Delegation Workflow
+
+1. Check subtasks with: `claude-harness delegation suggest <FEATURE_ID>`
+2. For delegatable tasks, use the Task tool with structured prompts
+3. Summarize subagent results concisely (under 500 words)
+4. Continue with main implementation
+
+### Delegation Prompt Template
+
+When using Task tool for delegation:
+
+```
+Feature: [feature_name] (ID: [feature_id])
+Subtask: [subtask_name]
+
+Context:
+- Relevant files: [list key files]
+- Current progress: [brief status]
+
+Task: [detailed description]
+
+Constraints:
+- Keep summary under 500 words
+- Report absolute file paths
+- Include line numbers when relevant
+
+Output: YAML summary with: accomplishments, files, decisions, issues, next_steps
+```
+
+### Estimated Context Savings
+
+| Task Type | Without Delegation | With Delegation | Savings |
+|-----------|-------------------|-----------------|---------|
+| Exploration | ~30K tokens | ~3-5K | 83-90% |
+| Test Writing | ~20K tokens | ~5-8K | 60-75% |
+| Documentation | ~15K tokens | ~3-5K | 67-80% |
+| Code Review | ~25K tokens | ~5-10K | 60-80% |
+
+---
 
 ## Project-Specific Rules
 
