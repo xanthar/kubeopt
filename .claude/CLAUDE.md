@@ -5,20 +5,39 @@ KubeOpt AI – AI-Driven Kubernetes Resource & Cost Optimizer
 
 # CLAUDE HARNESS INTEGRATION
 
+## WHAT IS THIS?
+
+Claude Harness is a **persistent workflow system** that tracks your work across sessions. Unlike Claude's internal TodoWrite (which resets each session), harness data persists in files:
+
+- `features.json` - Features and subtasks (survives session restarts)
+- `progress.md` - Session handoff notes (readable by next session)
+- `discoveries.json` - Findings and decisions (institutional memory)
+
+**Why use harness commands instead of TodoWrite?**
+→ Your progress is SAVED and visible to the next session
+→ Subtask completion is TRACKED for interrupted sessions
+→ The user can see your progress in real-time via `feature list`
+
 ## MANDATORY BEHAVIORS
+
+⚠️ **CRITICAL:** Do NOT use Claude's internal TodoWrite for feature/subtask tracking - use HARNESS commands only!
 
 **Session Start:**
 1. `./scripts/init.sh` → read `progress.md` → `feature list`
 2. If pending features exist: `feature start <ID>`
 3. If NO pending features: `feature add "<name>" -s "subtask1" -s "subtask2"` then `feature start <ID>`
 
-**Session End:** Update `progress.md` → `feature done <ID> <subtask>` → commit
+**During Work (after completing each subtask):**
+→ Run: `feature done <ID> "<subtask name>"` immediately after finishing each subtask
+→ Do NOT batch subtask completions - mark each one as you finish it
+
+**Session End:** Update `progress.md` → verify all subtasks marked → `feature complete <ID>` → commit
 
 **Rules:**
-- ONE feature at a time (start before work, complete after tests pass)
+- ONE feature at a time: `feature start` before work → complete subtasks one at a time with `feature done` → `feature complete` after tests pass
+- ALWAYS use `feature add` to create new features before starting work on them
 - NEVER edit `features.json` manually - use CLI commands only
-- ALL subtasks must complete before feature completion
-- ALWAYS add new features via CLI before starting work on them
+- ALL subtasks must be marked done with `feature done` before `feature complete`
 
 ## COMMANDS
 
@@ -51,15 +70,18 @@ All commands: `claude-harness <command>`
 
 ## DELEGATION
 
-Delegate to preserve context. Use Task tool for:
-- `explore`: File discovery, codebase analysis
-- `test`: Unit/E2E tests
-- `document`: READMEs, docs
-- `review`: Security, performance audits
+**When to delegate (preserves your context):**
+→ Writing tests: Delegate to `test` subagent after implementing code
+→ Exploring codebase: Delegate to `explore` subagent for file discovery
+→ Documentation: Delegate to `document` subagent for READMEs
+→ Code review: Delegate to `review` subagent for security/performance
 
-Keep in main: Core implementation, user interaction, commits.
+**Keep in main agent:** Core implementation, user interaction, git commits
 
-Workflow: `delegation suggest <ID>` → Task tool → summarize (<500 words)
+**Workflow:**
+1. After implementing code: `delegation suggest <ID>` to see what to delegate
+2. Use Task tool with appropriate subagent_type
+3. Summarize results (<500 words) back to main context
 
 ## ORCHESTRATION
 
@@ -70,10 +92,34 @@ Auto-workflow enabled. Commands:
 
 ## DISCOVERIES
 
-Track findings and requirements. Commands:
-- `discovery add "<summary>" [-t tag]` - Record finding
-- `discovery list [--tag TAG]` - List all
-- `discovery search "<query>"` - Search
+**Record important findings for future sessions:**
+→ Architectural decisions: `discovery add "Chose X over Y because..." -t architecture`
+→ Gotchas/bugs found: `discovery add "Watch out for X when..." -t gotcha`
+→ Dependencies: `discovery add "Requires X to be configured..." -t dependency`
+→ Performance notes: `discovery add "This is slow because..." -t performance`
+
+**When to add discoveries:**
+- Found unexpected behavior or edge case
+- Made a design decision with tradeoffs
+- Discovered something future sessions should know
+
+Commands: `discovery list`, `discovery search "<query>"`
+
+## DOCUMENTATION UPDATES
+
+**After each `feature complete <ID>`, update documentation:**
+
+1. **CHANGELOG.md** - Add entry under `## [Unreleased]`:
+   ```
+   ### Added/Changed/Fixed
+   - Brief description of what changed
+   ```
+
+2. **ROADMAP.md** - Mark completed features, update priorities
+
+3. **README.md** - Update if user-facing behavior changed
+
+**Keep entries concise.** One line per change, grouped by type.
 
 ## CONTEXT TRACKING
 

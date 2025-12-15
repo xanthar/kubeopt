@@ -137,6 +137,30 @@ class TeamStatus(str, Enum):
     SUSPENDED = "suspended"
 
 
+class ApplyRequestStatus(str, Enum):
+    """Status values for apply requests."""
+    PENDING_APPROVAL = "pending_approval"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    ROLLED_BACK = "rolled_back"
+
+
+class ApplyMode(str, Enum):
+    """How the apply should be executed."""
+    DRY_RUN = "dry_run"
+    APPLY = "apply"
+
+
+class GuardrailCheckStatus(str, Enum):
+    """Result of guardrail check."""
+    PASSED = "passed"
+    FAILED = "failed"
+    WARNING = "warning"
+
+
 def generate_uuid() -> str:
     """Generate a new UUID string."""
     return str(uuid.uuid4())
@@ -2008,4 +2032,589 @@ class ScheduleRun(db.Model):
             "error_message": self.error_message,
             "result_summary": self.result_summary,
             "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+# =============================================================================
+# Recommendation Auto-Apply Models (F022)
+# =============================================================================
+
+
+class ApplyPolicy(db.Model):
+    """
+    Policy governing how recommendations can be applied.
+
+    Defines guardrails, approval requirements, blackout windows, and exclusions
+    for automatic recommendation application.
+    """
+    __tablename__ = "apply_policies"
+
+    id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
+        default=generate_uuid
+    )
+    name: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False
+    )
+    description: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    # Scope: which team/cluster this policy applies to
+    team_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("teams.id", ondelete="CASCADE"),
+        nullable=True  # Nullable for global policies
+    )
+    cluster_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("clusters.id", ondelete="CASCADE"),
+        nullable=True  # Nullable for all-cluster policies
+    )
+    # Approval settings
+    require_approval: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False
+    )
+    auto_approve_below_threshold: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False
+    )
+    approval_threshold_cpu_percent: Mapped[float] = mapped_column(
+        Float,
+        default=20.0,
+        nullable=False
+    )
+    approval_threshold_memory_percent: Mapped[float] = mapped_column(
+        Float,
+        default=20.0,
+        nullable=False
+    )
+    # Guardrails - resource change limits
+    max_cpu_increase_percent: Mapped[float] = mapped_column(
+        Float,
+        default=200.0,
+        nullable=False
+    )
+    max_cpu_decrease_percent: Mapped[float] = mapped_column(
+        Float,
+        default=50.0,
+        nullable=False
+    )
+    max_memory_increase_percent: Mapped[float] = mapped_column(
+        Float,
+        default=200.0,
+        nullable=False
+    )
+    max_memory_decrease_percent: Mapped[float] = mapped_column(
+        Float,
+        default=50.0,
+        nullable=False
+    )
+    # Guardrails - minimum resources
+    min_cpu_request: Mapped[Optional[str]] = mapped_column(
+        String(50),
+        default="10m",
+        nullable=True
+    )
+    min_memory_request: Mapped[Optional[str]] = mapped_column(
+        String(50),
+        default="32Mi",
+        nullable=True
+    )
+    # Blackout windows (JSON array of {day_of_week, start_time, end_time, timezone})
+    blackout_windows: Mapped[list] = mapped_column(
+        JSON,
+        default=list,
+        nullable=False
+    )
+    # Exclusions
+    excluded_namespaces: Mapped[list] = mapped_column(
+        JSON,
+        default=lambda: ["kube-system", "kube-public"],
+        nullable=False
+    )
+    excluded_workload_patterns: Mapped[list] = mapped_column(
+        JSON,
+        default=list,
+        nullable=False
+    )
+    # Policy status and priority
+    enabled: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False
+    )
+    priority: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False
+    )
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    created_by_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
+    )
+
+    # Relationships
+    team: Mapped[Optional["Team"]] = relationship(
+        "Team",
+        foreign_keys=[team_id]
+    )
+    cluster: Mapped[Optional["Cluster"]] = relationship(
+        "Cluster",
+        foreign_keys=[cluster_id]
+    )
+    created_by: Mapped[Optional["User"]] = relationship(
+        "User",
+        foreign_keys=[created_by_id]
+    )
+    apply_requests: Mapped[list["ApplyRequest"]] = relationship(
+        "ApplyRequest",
+        back_populates="apply_policy",
+        lazy="dynamic"
+    )
+
+    # Indexes
+    __table_args__ = (
+        Index("ix_apply_policies_name", "name"),
+        Index("ix_apply_policies_team_id", "team_id"),
+        Index("ix_apply_policies_cluster_id", "cluster_id"),
+        Index("ix_apply_policies_enabled", "enabled"),
+        Index("ix_apply_policies_priority", "priority"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<ApplyPolicy {self.name} enabled={self.enabled}>"
+
+    def to_dict(self) -> dict:
+        """Convert model to dictionary representation."""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "team_id": self.team_id,
+            "cluster_id": self.cluster_id,
+            "require_approval": self.require_approval,
+            "auto_approve_below_threshold": self.auto_approve_below_threshold,
+            "approval_threshold_cpu_percent": self.approval_threshold_cpu_percent,
+            "approval_threshold_memory_percent": self.approval_threshold_memory_percent,
+            "max_cpu_increase_percent": self.max_cpu_increase_percent,
+            "max_cpu_decrease_percent": self.max_cpu_decrease_percent,
+            "max_memory_increase_percent": self.max_memory_increase_percent,
+            "max_memory_decrease_percent": self.max_memory_decrease_percent,
+            "min_cpu_request": self.min_cpu_request,
+            "min_memory_request": self.min_memory_request,
+            "blackout_windows": self.blackout_windows,
+            "excluded_namespaces": self.excluded_namespaces,
+            "excluded_workload_patterns": self.excluded_workload_patterns,
+            "enabled": self.enabled,
+            "priority": self.priority,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "created_by_id": self.created_by_id,
+        }
+
+
+class ApplyRequest(db.Model):
+    """
+    Request to apply an optimization suggestion to a cluster.
+
+    Tracks the full lifecycle of applying a recommendation, including
+    approval workflow, execution, and rollback capabilities.
+    """
+    __tablename__ = "apply_requests"
+
+    id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
+        default=generate_uuid
+    )
+    suggestion_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("suggestions.id", ondelete="CASCADE"),
+        nullable=False
+    )
+    cluster_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("clusters.id", ondelete="CASCADE"),
+        nullable=False
+    )
+    team_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("teams.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    batch_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("apply_batches.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    # Request configuration
+    status: Mapped[ApplyRequestStatus] = mapped_column(
+        SQLEnum(ApplyRequestStatus, native_enum=False),
+        default=ApplyRequestStatus.PENDING_APPROVAL,
+        nullable=False
+    )
+    mode: Mapped[ApplyMode] = mapped_column(
+        SQLEnum(ApplyMode, native_enum=False),
+        default=ApplyMode.DRY_RUN,
+        nullable=False
+    )
+    # Approval workflow
+    requires_approval: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False
+    )
+    approved_by_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    approved_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    rejection_reason: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    # Policy used for this request
+    apply_policy_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("apply_policies.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    # Pre-apply state (for rollback)
+    previous_config: Mapped[dict] = mapped_column(
+        JSON,
+        nullable=True,
+        default=dict
+    )
+    proposed_config: Mapped[dict] = mapped_column(
+        JSON,
+        nullable=False,
+        default=dict
+    )
+    # Execution details
+    started_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    completed_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    duration_ms: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        nullable=True
+    )
+    # Results
+    kubectl_output: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    error_message: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    # Guardrail check results
+    guardrail_results: Mapped[dict] = mapped_column(
+        JSON,
+        nullable=True,
+        default=dict
+    )
+    # Rollback tracking
+    rolled_back: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False
+    )
+    rolled_back_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    rolled_back_by_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    rollback_reason: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    created_by_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
+    )
+
+    # Relationships
+    suggestion: Mapped["Suggestion"] = relationship(
+        "Suggestion",
+        foreign_keys=[suggestion_id]
+    )
+    cluster: Mapped["Cluster"] = relationship(
+        "Cluster",
+        foreign_keys=[cluster_id]
+    )
+    team: Mapped[Optional["Team"]] = relationship(
+        "Team",
+        foreign_keys=[team_id]
+    )
+    apply_policy: Mapped[Optional["ApplyPolicy"]] = relationship(
+        "ApplyPolicy",
+        back_populates="apply_requests"
+    )
+    batch: Mapped[Optional["ApplyBatch"]] = relationship(
+        "ApplyBatch",
+        back_populates="apply_requests"
+    )
+    approved_by: Mapped[Optional["User"]] = relationship(
+        "User",
+        foreign_keys=[approved_by_id]
+    )
+    rolled_back_by: Mapped[Optional["User"]] = relationship(
+        "User",
+        foreign_keys=[rolled_back_by_id]
+    )
+    created_by: Mapped[Optional["User"]] = relationship(
+        "User",
+        foreign_keys=[created_by_id]
+    )
+
+    # Indexes
+    __table_args__ = (
+        Index("ix_apply_requests_suggestion_id", "suggestion_id"),
+        Index("ix_apply_requests_cluster_id", "cluster_id"),
+        Index("ix_apply_requests_team_id", "team_id"),
+        Index("ix_apply_requests_batch_id", "batch_id"),
+        Index("ix_apply_requests_status", "status"),
+        Index("ix_apply_requests_created_at", "created_at"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<ApplyRequest {self.id} status={self.status} mode={self.mode}>"
+
+    def to_dict(self) -> dict:
+        """Convert model to dictionary representation."""
+        return {
+            "id": self.id,
+            "suggestion_id": self.suggestion_id,
+            "cluster_id": self.cluster_id,
+            "team_id": self.team_id,
+            "batch_id": self.batch_id,
+            "status": self.status.value if self.status else None,
+            "mode": self.mode.value if self.mode else None,
+            "requires_approval": self.requires_approval,
+            "approved_by_id": self.approved_by_id,
+            "approved_at": self.approved_at.isoformat() if self.approved_at else None,
+            "rejection_reason": self.rejection_reason,
+            "apply_policy_id": self.apply_policy_id,
+            "previous_config": self.previous_config,
+            "proposed_config": self.proposed_config,
+            "started_at": self.started_at.isoformat() if self.started_at else None,
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "duration_ms": self.duration_ms,
+            "kubectl_output": self.kubectl_output,
+            "error_message": self.error_message,
+            "guardrail_results": self.guardrail_results,
+            "rolled_back": self.rolled_back,
+            "rolled_back_at": self.rolled_back_at.isoformat() if self.rolled_back_at else None,
+            "rolled_back_by_id": self.rolled_back_by_id,
+            "rollback_reason": self.rollback_reason,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "created_by_id": self.created_by_id,
+        }
+
+
+class ApplyBatch(db.Model):
+    """
+    Batch of apply requests executed together.
+
+    Allows grouping multiple apply requests for atomic execution
+    with shared approval and rollback capabilities.
+    """
+    __tablename__ = "apply_batches"
+
+    id: Mapped[str] = mapped_column(
+        String(36),
+        primary_key=True,
+        default=generate_uuid
+    )
+    name: Mapped[Optional[str]] = mapped_column(
+        String(255),
+        nullable=True
+    )
+    description: Mapped[Optional[str]] = mapped_column(
+        Text,
+        nullable=True
+    )
+    cluster_id: Mapped[str] = mapped_column(
+        String(36),
+        ForeignKey("clusters.id", ondelete="CASCADE"),
+        nullable=False
+    )
+    team_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("teams.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    optimization_run_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("optimization_runs.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    # Batch configuration
+    status: Mapped[ApplyRequestStatus] = mapped_column(
+        SQLEnum(ApplyRequestStatus, native_enum=False),
+        default=ApplyRequestStatus.PENDING_APPROVAL,
+        nullable=False
+    )
+    mode: Mapped[ApplyMode] = mapped_column(
+        SQLEnum(ApplyMode, native_enum=False),
+        default=ApplyMode.DRY_RUN,
+        nullable=False
+    )
+    # Approval
+    requires_approval: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False
+    )
+    approved_by_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    approved_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    # Progress tracking
+    total_requests: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False
+    )
+    completed_requests: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False
+    )
+    failed_requests: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False
+    )
+    # Execution control
+    stop_on_failure: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False
+    )
+    # Execution timestamps
+    started_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    completed_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    created_by_id: Mapped[Optional[str]] = mapped_column(
+        String(36),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
+    )
+
+    # Relationships
+    cluster: Mapped["Cluster"] = relationship(
+        "Cluster",
+        foreign_keys=[cluster_id]
+    )
+    team: Mapped[Optional["Team"]] = relationship(
+        "Team",
+        foreign_keys=[team_id]
+    )
+    optimization_run: Mapped[Optional["OptimizationRun"]] = relationship(
+        "OptimizationRun",
+        foreign_keys=[optimization_run_id]
+    )
+    approved_by: Mapped[Optional["User"]] = relationship(
+        "User",
+        foreign_keys=[approved_by_id]
+    )
+    created_by: Mapped[Optional["User"]] = relationship(
+        "User",
+        foreign_keys=[created_by_id]
+    )
+    apply_requests: Mapped[list["ApplyRequest"]] = relationship(
+        "ApplyRequest",
+        back_populates="batch",
+        lazy="dynamic"
+    )
+
+    # Indexes
+    __table_args__ = (
+        Index("ix_apply_batches_cluster_id", "cluster_id"),
+        Index("ix_apply_batches_team_id", "team_id"),
+        Index("ix_apply_batches_status", "status"),
+        Index("ix_apply_batches_created_at", "created_at"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<ApplyBatch {self.id} status={self.status} requests={self.total_requests}>"
+
+    def to_dict(self) -> dict:
+        """Convert model to dictionary representation."""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "cluster_id": self.cluster_id,
+            "team_id": self.team_id,
+            "optimization_run_id": self.optimization_run_id,
+            "status": self.status.value if self.status else None,
+            "mode": self.mode.value if self.mode else None,
+            "requires_approval": self.requires_approval,
+            "approved_by_id": self.approved_by_id,
+            "approved_at": self.approved_at.isoformat() if self.approved_at else None,
+            "total_requests": self.total_requests,
+            "completed_requests": self.completed_requests,
+            "failed_requests": self.failed_requests,
+            "stop_on_failure": self.stop_on_failure,
+            "started_at": self.started_at.isoformat() if self.started_at else None,
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "created_by_id": self.created_by_id,
         }

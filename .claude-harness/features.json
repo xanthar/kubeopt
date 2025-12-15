@@ -2,52 +2,6 @@
   "current_phase": "Phase 1",
   "features": [
     {
-      "id": "F022",
-      "name": "Recommendation Auto-Apply",
-      "status": "pending",
-      "priority": 22,
-      "tests_passing": false,
-      "e2e_validated": false,
-      "subtasks": [
-        {
-          "name": "Add ApplyRequest and ApplyPolicy models",
-          "done": false
-        },
-        {
-          "name": "Create Alembic migration",
-          "done": false
-        },
-        {
-          "name": "Implement ApplyService with K8s patching logic",
-          "done": false
-        },
-        {
-          "name": "Implement rollback capability with manifest versioning",
-          "done": false
-        },
-        {
-          "name": "Add guardrails for max change percent and blackout windows",
-          "done": false
-        },
-        {
-          "name": "Integrate with audit logging",
-          "done": false
-        },
-        {
-          "name": "Create apply blueprint with API endpoints",
-          "done": false
-        },
-        {
-          "name": "Write tests including failure and rollback scenarios",
-          "done": false
-        }
-      ],
-      "notes": "",
-      "created_at": "2025-12-15T17:46:06.308932+00:00",
-      "completed_at": null,
-      "blocked_reason": null
-    },
-    {
       "id": "F023",
       "name": "Recommendation History and Tracking",
       "status": "pending",
@@ -548,6 +502,52 @@
       ],
       "notes": "",
       "created_at": "2025-12-15T17:47:40.826899+00:00",
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F-001",
+      "name": "Recommendation Auto-Apply",
+      "status": "pending",
+      "priority": 22,
+      "tests_passing": false,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add kubernetes client dependency",
+          "done": false
+        },
+        {
+          "name": "Create database models and migration",
+          "done": false
+        },
+        {
+          "name": "Implement K8sApplyService",
+          "done": false
+        },
+        {
+          "name": "Implement GuardrailService",
+          "done": false
+        },
+        {
+          "name": "Implement ApplyService",
+          "done": false
+        },
+        {
+          "name": "Add Pydantic schemas",
+          "done": false
+        },
+        {
+          "name": "Create API routes",
+          "done": false
+        },
+        {
+          "name": "Write unit tests",
+          "done": false
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T20:20:58.651167+00:00",
       "completed_at": null,
       "blocked_reason": null
     }
@@ -1100,6 +1100,52 @@
       "notes": "",
       "created_at": "2025-12-15T17:46:05.870820+00:00",
       "completed_at": "2025-12-15T19:33:06.667148+00:00",
+      "blocked_reason": null
+    },
+    {
+      "id": "F022",
+      "name": "Recommendation Auto-Apply",
+      "status": "completed",
+      "priority": 22,
+      "tests_passing": true,
+      "e2e_validated": false,
+      "subtasks": [
+        {
+          "name": "Add ApplyRequest and ApplyPolicy models",
+          "done": true
+        },
+        {
+          "name": "Create Alembic migration",
+          "done": true
+        },
+        {
+          "name": "Implement ApplyService with K8s patching logic",
+          "done": true
+        },
+        {
+          "name": "Implement rollback capability with manifest versioning",
+          "done": true
+        },
+        {
+          "name": "Add guardrails for max change percent and blackout windows",
+          "done": true
+        },
+        {
+          "name": "Integrate with audit logging",
+          "done": true
+        },
+        {
+          "name": "Create apply blueprint with API endpoints",
+          "done": true
+        },
+        {
+          "name": "Write tests including failure and rollback scenarios",
+          "done": true
+        }
+      ],
+      "notes": "",
+      "created_at": "2025-12-15T17:46:06.308932+00:00",
+      "completed_at": "2025-12-15T20:35:24.419045+00:00",
       "blocked_reason": null
     }
   ],

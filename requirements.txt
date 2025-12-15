@@ -22,6 +22,9 @@ httpx>=0.25.0
 PyYAML>=6.0.1
 ruamel.yaml>=0.18.0
 
+# Kubernetes Client
+kubernetes>=28.1.0
+
 # Utilities
 python-dotenv>=1.0.0
 

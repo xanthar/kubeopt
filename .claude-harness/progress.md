@@ -1,6 +1,6 @@
 # Session Progress Log
 
-## Last Session: 2025-12-15 19:33 UTC
+## Last Session: 2025-12-15 20:35 UTC
 
 ### Completed This Session
 - [x] **F013: Integration Tests for Insights API** (48 tests)
@@ -43,28 +43,37 @@
 - [x] `/api/docs` (Swagger UI) and `/api/redoc` endpoints
 - [x] All API endpoints, schemas, and security documented
 - [x] **F021: Scheduled Optimization Runs** (7/7 subtasks, 42 tests)
-  - APScheduler + croniter for cron scheduling
-  - Schedule and ScheduleRun database models
-  - SchedulerService with full CRUD operations
-  - Cron expression validation with next-run preview
-  - Auto-pause on consecutive failures
-  - `/api/v1/schedules` REST API with CRUD endpoints
-  - Enable/disable/pause/resume schedule controls
-  - Manual trigger capability
+- [x] APScheduler + croniter for cron scheduling
+- [x] Schedule and ScheduleRun database models
+- [x] SchedulerService with full CRUD operations
+- [x] Cron expression validation with next-run preview
+- [x] Auto-pause on consecutive failures
+- [x] `/api/v1/schedules` REST API with CRUD endpoints
+- [x] Enable/disable/pause/resume schedule controls
+- [x] Manual trigger capability
 - [x] **Total Tests: 442 passing**
+- [x] **F022: Recommendation Auto-Apply** (8/8 subtasks, 66 tests)
+- [x] kubernetes>=28.1.0 dependency for K8s client
+- [x] ApplyPolicy, ApplyRequest, ApplyBatch database models
+- [x] K8sApplyService for patching/rollback with K8s client
+- [x] GuardrailService for safety checks (change limits, blackouts, exclusions)
+- [x] ApplyService for orchestrating approval workflow
+- [x] Pydantic schemas for apply feature
+- [x] `/api/v1/apply` REST API with full CRUD operations
+- [x] **Total Tests: 508 passing**
 
 ### Current Work In Progress
-- [ ] No tasks in progress - F021 complete!
+- [ ] No tasks in progress - F022 complete!
 
 ### Blockers
 - None
 
 ### Next Session Should
 1. Run `./scripts/init.sh` to verify environment
-2. Create Alembic migration for new webhook models (WebhookConfig, WebhookDeliveryLog)
-3. Consider adding E2E tests
-4. Potential: Rate limiting for API endpoints
-5. Potential: API documentation with OpenAPI/Swagger
+2. Run `feature list` to see available features
+3. Consider implementing F023: Recommendation History and Tracking
+4. Consider implementing F024: Namespace-Level Budgets
+5. Consider implementing F025: Rightsizing Confidence Scoring
 
 ### Context Notes
 - Project: kubeopt
@@ -104,6 +113,27 @@
 - `GET /schedules/<id>/runs` - List schedule runs
 - `GET /schedules/runs/<run_id>` - Get schedule run
 - `POST /schedules/validate-cron` - Validate cron expression
+- **Apply API (F022):**
+- `POST /apply-policies` - Create apply policy
+- `GET /apply-policies` - List apply policies
+- `GET /apply-policies/<id>` - Get apply policy
+- `PUT /apply-policies/<id>` - Update apply policy
+- `DELETE /apply-policies/<id>` - Delete apply policy
+- `POST /apply` - Create apply request
+- `POST /apply/batch` - Create batch apply
+- `GET /apply/requests` - List apply requests
+- `GET /apply/requests/<id>` - Get apply request
+- `POST /apply/requests/<id>/approve` - Approve request
+- `POST /apply/requests/<id>/reject` - Reject request
+- `POST /apply/requests/<id>/execute` - Execute request
+- `POST /apply/requests/<id>/rollback` - Rollback request
+- `GET /apply/batches` - List batches
+- `GET /apply/batches/<id>` - Get batch
+- `POST /apply/batches/<id>/approve` - Approve batch
+- `POST /apply/batches/<id>/execute` - Execute batch
+- `POST /apply/batches/<id>/cancel` - Cancel batch
+- `POST /suggestions/<id>/apply` - Quick apply suggestion
+- `GET /apply/history` - Get apply history
 - `tests/conftest.py` - Shared pytest fixtures
 - `tests/integration/__init__.py`
 - `tests/integration/test_insights_api.py` - 48 integration tests
@@ -154,6 +184,14 @@
 - /root/projects/kubeopt/kubeopt_ai/core/scheduler.py
 - /root/projects/kubeopt/kubeopt_ai/routes/schedules.py
 - /root/projects/kubeopt/tests/unit/test_scheduler.py
+- /root/.claude/plans/zany-weaving-sparrow.md
+- /root/projects/kubeopt/migrations/versions/20251215_005_add_apply_tables.py
+- /root/projects/kubeopt/kubeopt_ai/core/k8s_apply.py
+- /root/projects/kubeopt/kubeopt_ai/core/guardrails.py
+- /root/projects/kubeopt/kubeopt_ai/core/apply_service.py
+- /root/projects/kubeopt/kubeopt_ai/core/schemas.py
+- /root/projects/kubeopt/kubeopt_ai/routes/apply.py
+- /root/projects/kubeopt/tests/unit/test_apply.py
 
 ---
 ## Previous Sessions

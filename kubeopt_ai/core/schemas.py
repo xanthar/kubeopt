@@ -364,3 +364,229 @@ class AnomalySummaryResponse(BaseModel):
     alerts_by_type: dict[str, int]
     average_health_score: float
     workload_analyses: list[AnomalyAnalysisResponse] = Field(default_factory=list)
+
+
+# ============================================================================
+# Apply Feature Schemas (F022)
+# ============================================================================
+
+class ApplyMode(str, Enum):
+    """How the apply should be executed."""
+    DRY_RUN = "dry_run"
+    APPLY = "apply"
+
+
+class ApplyRequestStatus(str, Enum):
+    """Status values for apply requests."""
+    PENDING_APPROVAL = "pending_approval"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    ROLLED_BACK = "rolled_back"
+
+
+class GuardrailCheckStatus(str, Enum):
+    """Result of guardrail check."""
+    PASSED = "passed"
+    FAILED = "failed"
+    WARNING = "warning"
+
+
+class BlackoutWindowSchema(BaseModel):
+    """Blackout window configuration."""
+    day_of_week: Optional[int] = Field(
+        default=None,
+        ge=0,
+        le=6,
+        description="Day of week (0=Monday, 6=Sunday), None for every day"
+    )
+    start_time: str = Field(
+        ...,
+        pattern=r"^\d{2}:\d{2}$",
+        description="Start time in HH:MM format"
+    )
+    end_time: str = Field(
+        ...,
+        pattern=r"^\d{2}:\d{2}$",
+        description="End time in HH:MM format"
+    )
+    timezone: str = Field(default="UTC", description="Timezone for the window")
+
+
+class CreateApplyPolicyRequest(BaseModel):
+    """Request to create an apply policy."""
+    name: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    team_id: Optional[str] = None
+    cluster_id: Optional[str] = None
+    require_approval: bool = Field(default=True)
+    auto_approve_below_threshold: bool = Field(default=False)
+    approval_threshold_cpu_percent: float = Field(default=20.0, ge=0, le=100)
+    approval_threshold_memory_percent: float = Field(default=20.0, ge=0, le=100)
+    max_cpu_increase_percent: float = Field(default=200.0, ge=0)
+    max_cpu_decrease_percent: float = Field(default=50.0, ge=0, le=100)
+    max_memory_increase_percent: float = Field(default=200.0, ge=0)
+    max_memory_decrease_percent: float = Field(default=50.0, ge=0, le=100)
+    min_cpu_request: Optional[str] = Field(default="10m")
+    min_memory_request: Optional[str] = Field(default="32Mi")
+    blackout_windows: list[BlackoutWindowSchema] = Field(default_factory=list)
+    excluded_namespaces: list[str] = Field(
+        default_factory=lambda: ["kube-system", "kube-public"]
+    )
+    excluded_workload_patterns: list[str] = Field(default_factory=list)
+    priority: int = Field(default=0)
+
+
+class UpdateApplyPolicyRequest(BaseModel):
+    """Request to update an apply policy."""
+    name: Optional[str] = Field(default=None, min_length=1, max_length=255)
+    description: Optional[str] = None
+    require_approval: Optional[bool] = None
+    auto_approve_below_threshold: Optional[bool] = None
+    approval_threshold_cpu_percent: Optional[float] = Field(default=None, ge=0, le=100)
+    approval_threshold_memory_percent: Optional[float] = Field(default=None, ge=0, le=100)
+    max_cpu_increase_percent: Optional[float] = Field(default=None, ge=0)
+    max_cpu_decrease_percent: Optional[float] = Field(default=None, ge=0, le=100)
+    max_memory_increase_percent: Optional[float] = Field(default=None, ge=0)
+    max_memory_decrease_percent: Optional[float] = Field(default=None, ge=0, le=100)
+    min_cpu_request: Optional[str] = None
+    min_memory_request: Optional[str] = None
+    blackout_windows: Optional[list[BlackoutWindowSchema]] = None
+    excluded_namespaces: Optional[list[str]] = None
+    excluded_workload_patterns: Optional[list[str]] = None
+    enabled: Optional[bool] = None
+    priority: Optional[int] = None
+
+
+class ApplyPolicyResponse(BaseModel):
+    """Response for apply policy."""
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    name: str
+    description: Optional[str] = None
+    team_id: Optional[str] = None
+    cluster_id: Optional[str] = None
+    require_approval: bool
+    auto_approve_below_threshold: bool
+    approval_threshold_cpu_percent: float
+    approval_threshold_memory_percent: float
+    max_cpu_increase_percent: float
+    max_cpu_decrease_percent: float
+    max_memory_increase_percent: float
+    max_memory_decrease_percent: float
+    min_cpu_request: Optional[str] = None
+    min_memory_request: Optional[str] = None
+    blackout_windows: list = Field(default_factory=list)
+    excluded_namespaces: list = Field(default_factory=list)
+    excluded_workload_patterns: list = Field(default_factory=list)
+    enabled: bool
+    priority: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class CreateApplyRequest(BaseModel):
+    """Request to create an apply request."""
+    suggestion_id: str = Field(..., description="ID of the suggestion to apply")
+    cluster_id: str = Field(..., description="ID of the target cluster")
+    mode: ApplyMode = Field(default=ApplyMode.DRY_RUN)
+
+
+class CreateBatchApplyRequest(BaseModel):
+    """Request to create a batch of apply requests."""
+    suggestion_ids: list[str] = Field(..., min_length=1)
+    cluster_id: str = Field(..., description="ID of the target cluster")
+    mode: ApplyMode = Field(default=ApplyMode.DRY_RUN)
+    stop_on_failure: bool = Field(default=True)
+    name: Optional[str] = None
+    description: Optional[str] = None
+
+
+class ApproveRequestBody(BaseModel):
+    """Body for approving an apply request."""
+    comment: Optional[str] = None
+
+
+class RejectRequestBody(BaseModel):
+    """Body for rejecting an apply request."""
+    reason: str = Field(..., min_length=1)
+
+
+class RollbackRequestBody(BaseModel):
+    """Body for rolling back an apply request."""
+    reason: str = Field(..., min_length=1)
+
+
+class GuardrailCheckResponse(BaseModel):
+    """Response for a guardrail check result."""
+    name: str
+    status: GuardrailCheckStatus
+    message: str
+    current_value: Optional[float] = None
+    proposed_value: Optional[float] = None
+    threshold: Optional[float] = None
+
+
+class ApplyRequestResponse(BaseModel):
+    """Response for an apply request."""
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    suggestion_id: str
+    cluster_id: str
+    team_id: Optional[str] = None
+    batch_id: Optional[str] = None
+    status: ApplyRequestStatus
+    mode: ApplyMode
+    requires_approval: bool
+    approved_by_id: Optional[str] = None
+    approved_at: Optional[datetime] = None
+    rejection_reason: Optional[str] = None
+    apply_policy_id: Optional[str] = None
+    previous_config: Optional[dict] = None
+    proposed_config: dict
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    duration_ms: Optional[int] = None
+    kubectl_output: Optional[str] = None
+    error_message: Optional[str] = None
+    guardrail_results: Optional[dict] = None
+    rolled_back: bool
+    rolled_back_at: Optional[datetime] = None
+    rollback_reason: Optional[str] = None
+    created_at: datetime
+
+
+class ApplyBatchResponse(BaseModel):
+    """Response for an apply batch."""
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    name: Optional[str] = None
+    description: Optional[str] = None
+    cluster_id: str
+    team_id: Optional[str] = None
+    optimization_run_id: Optional[str] = None
+    status: ApplyRequestStatus
+    mode: ApplyMode
+    requires_approval: bool
+    approved_by_id: Optional[str] = None
+    approved_at: Optional[datetime] = None
+    total_requests: int
+    completed_requests: int
+    failed_requests: int
+    stop_on_failure: bool
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    created_at: datetime
+
+
+class ApplyHistoryResponse(BaseModel):
+    """Response for apply history listing."""
+    requests: list[ApplyRequestResponse]
+    total: int
+    page: int
+    per_page: int
