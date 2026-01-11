@@ -3,9 +3,8 @@ Unit tests for the notification system.
 """
 
 import pytest
-import json
 from datetime import datetime, timedelta, timezone
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 from kubeopt_ai.core.notifications import (
     WebhookFormat,
@@ -296,7 +295,7 @@ class TestWebhookDelivery:
             secret="my-secret",
         )
 
-        result = delivery.deliver(endpoint, {"test": "data"})
+        delivery.deliver(endpoint, {"test": "data"})
 
         # Check that signature header was added
         call_args = mock_session.post.call_args

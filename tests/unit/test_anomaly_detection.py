@@ -6,15 +6,12 @@ and alert generation functionality.
 """
 
 import pytest
-from datetime import datetime, timezone
 from statistics import mean, stdev
 
 from kubeopt_ai.core.anomaly_detection import (
     AnomalyType,
     AlertSeverity,
-    DataPoint,
     AnomalyAlert,
-    AnomalyAnalysis,
     StatisticalAnalyzer,
     AnomalyDetector,
     analyze_optimization_run_anomalies,

@@ -5,12 +5,11 @@ Provides functionality for applying resource changes to Kubernetes clusters,
 including patches, rollbacks, and dry-run operations.
 """
 
-import io
 import logging
 import tempfile
 import time
-from dataclasses import dataclass, field
-from typing import Any, Optional
+from dataclasses import dataclass
+from typing import Optional
 
 import yaml
 
@@ -492,7 +491,6 @@ class K8sApplyService:
             except ApiException as e:
                 if e.status == 404:
                     # Create new HPA
-                    from kubernetes import client
                     result = autoscaling.create_namespaced_horizontal_pod_autoscaler(
                         namespace=namespace,
                         body=hpa_spec,
@@ -549,7 +547,7 @@ class K8sApplyService:
             from kubernetes.client.rest import ApiException
 
             core_v1 = self._get_core_v1()
-            version_info = core_v1.get_api_resources()
+            core_v1.get_api_resources()  # Verify connection works
 
             duration_ms = int((time.time() - start_time) * 1000)
 

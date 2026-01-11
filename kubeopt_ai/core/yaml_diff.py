@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from typing import Optional
 from io import StringIO
 
-import yaml
 from ruamel.yaml import YAML
 
 from kubeopt_ai.core.schemas import (

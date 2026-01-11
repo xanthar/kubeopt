@@ -7,7 +7,7 @@ and generating capacity planning recommendations.
 
 import logging
 import statistics
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Optional
 from dataclasses import dataclass
 
@@ -18,7 +18,6 @@ from kubeopt_ai.core.models import (
     TrendDirection,
 )
 from kubeopt_ai.core.metrics_collector import (
-    MetricsCollector,
     PrometheusConfig,
     PrometheusClient,
 )

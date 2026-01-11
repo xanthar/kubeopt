@@ -8,9 +8,7 @@ from kubeopt_ai.core.yaml_diff import (
     YAMLDiffGenerator,
     generate_diff_for_suggestion,
     generate_all_diffs,
-    ResourceChange,
     ContainerDiff,
-    WorkloadDiff,
 )
 from kubeopt_ai.core.schemas import (
     WorkloadSuggestion,

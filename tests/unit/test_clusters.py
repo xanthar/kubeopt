@@ -4,14 +4,12 @@ Unit tests for cluster management (F019).
 
 import pytest
 from unittest.mock import patch, MagicMock
-from datetime import datetime, timezone
 
-from kubeopt_ai.core.models import Cluster, ClusterStatus, ClusterProvider
+from kubeopt_ai.core.models import ClusterStatus, ClusterProvider
 from kubeopt_ai.core.cluster_manager import (
     ClusterManager,
     ClusterManagerError,
     ClusterNotFoundError,
-    ClusterConnectionResult,
 )
 
 

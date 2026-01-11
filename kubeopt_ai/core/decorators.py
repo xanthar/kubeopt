@@ -7,11 +7,10 @@ and permission-based access control.
 
 import functools
 import logging
-from typing import Callable, Optional, Union, List
+from typing import Callable, Optional
 
 from flask import current_app, g, request, jsonify
 from flask_jwt_extended import (
-    jwt_required as flask_jwt_required,
     get_jwt_identity,
     verify_jwt_in_request,
 )
@@ -65,7 +64,7 @@ def auth_required(
             # Verify JWT
             try:
                 verify_jwt_in_request(optional=optional, fresh=fresh, refresh=refresh)
-            except Exception as e:
+            except Exception:
                 if optional:
                     g.current_user = None
                     return fn(*args, **kwargs)

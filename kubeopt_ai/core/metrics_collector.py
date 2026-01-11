@@ -6,7 +6,7 @@ for Kubernetes workloads to support optimization analysis.
 """
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Optional
 from dataclasses import dataclass
 

@@ -13,7 +13,6 @@ from kubeopt_ai.core.apply_service import (
     get_apply_service,
     ApplyServiceError,
     ApplyRequestNotFoundError,
-    ApplyPolicyNotFoundError,
     InvalidApplyStateError,
 )
 from kubeopt_ai.core.models import (
@@ -28,7 +27,6 @@ from kubeopt_ai.core.schemas import (
     UpdateApplyPolicyRequest,
     CreateApplyRequest,
     CreateBatchApplyRequest,
-    ApproveRequestBody,
     RejectRequestBody,
     RollbackRequestBody,
 )

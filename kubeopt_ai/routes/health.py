@@ -5,7 +5,7 @@ Provides liveness and readiness probes for Kubernetes deployments.
 """
 
 import logging
-from flask import Blueprint, jsonify, current_app
+from flask import Blueprint, jsonify
 from sqlalchemy import text
 
 from kubeopt_ai.extensions import db

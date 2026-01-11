@@ -20,7 +20,6 @@ from kubeopt_ai.core.metrics_collector import (
     MetricsCollectionError,
 )
 from kubeopt_ai.core.anomaly_detection import (
-    AnomalyDetector,
     AnomalyAlert,
     AnomalyType,
     AlertSeverity,

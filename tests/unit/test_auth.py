@@ -11,8 +11,6 @@ Tests cover:
 
 import pytest
 from datetime import datetime, timezone, timedelta
-from unittest.mock import Mock, patch, MagicMock
-import hashlib
 
 from kubeopt_ai.app import create_app
 from kubeopt_ai.config import TestConfig
@@ -36,8 +34,6 @@ from kubeopt_ai.core.auth import (
     get_role_service,
     InvalidCredentialsError,
     UserInactiveError,
-    TokenError,
-    AuthError,
 )
 
 
@@ -287,7 +283,7 @@ class TestAuthServiceLogin:
         """Test that login with inactive user raises error."""
         with app.app_context():
             # Create an inactive user
-            user = auth_service.create_user(
+            auth_service.create_user(
                 email="inactive@example.com",
                 password="password123",
                 status=UserStatus.INACTIVE,
@@ -301,7 +297,7 @@ class TestAuthServiceLogin:
     def test_login_suspended_user_raises_error(self, app, auth_service):
         """Test that login with suspended user raises error."""
         with app.app_context():
-            user = auth_service.create_user(
+            auth_service.create_user(
                 email="suspended@example.com",
                 password="password123",
                 status=UserStatus.SUSPENDED,

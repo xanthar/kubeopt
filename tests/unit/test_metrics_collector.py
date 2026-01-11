@@ -4,7 +4,6 @@ Unit tests for the Prometheus metrics collector.
 
 import pytest
 import responses
-from responses import matchers
 
 from kubeopt_ai.core.metrics_collector import (
     MetricsCollector,

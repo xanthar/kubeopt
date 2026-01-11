@@ -3,9 +3,7 @@ Unit tests for scheduled optimization runs (F021).
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
-from datetime import datetime, timezone, timedelta
-from freezegun import freeze_time
+from datetime import datetime, timezone
 
 from kubeopt_ai.core.models import (
     Schedule,
@@ -185,7 +183,7 @@ class TestSchedulerService:
         """Test listing schedules filtered by status."""
         service = SchedulerService()
 
-        active = service.create_schedule(
+        service.create_schedule(
             name="active-schedule",
             cron_expression="0 0 * * *",
             manifest_source_path="/manifests/app",
@@ -251,8 +249,6 @@ class TestSchedulerService:
             cron_expression="0 0 * * *",  # Midnight
             manifest_source_path="/manifests/app",
         )
-
-        original_next_run = schedule.next_run_at
 
         updated = service.update_schedule(
             schedule.id,

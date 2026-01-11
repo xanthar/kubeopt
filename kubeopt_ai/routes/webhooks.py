@@ -5,8 +5,8 @@ Provides REST API for configuring and managing webhook notifications.
 """
 
 import logging
-from flask import Blueprint, jsonify, request, current_app
-from pydantic import BaseModel, Field, HttpUrl, ValidationError
+from flask import Blueprint, jsonify, request
+from pydantic import BaseModel, Field, ValidationError
 from typing import Optional
 from enum import Enum
 
@@ -18,7 +18,6 @@ from kubeopt_ai.core.models import (
     WebhookStatus,
 )
 from kubeopt_ai.core.notifications import (
-    NotificationDispatcher,
     WebhookEndpoint,
     WebhookFormat,
     WebhookDelivery,
@@ -377,7 +376,6 @@ def test_webhook(webhook_id: str):
     severity = severity_map.get(req.severity.lower(), AlertSeverity.HIGH)
 
     # Create test alert
-    from datetime import datetime, timezone
 
     test_alert = AnomalyAlert(
         anomaly_type=AnomalyType.UNUSUAL_PATTERN,

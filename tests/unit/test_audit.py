@@ -2,17 +2,15 @@
 Unit tests for audit logging functionality.
 """
 
-import json
 import pytest
 from datetime import datetime, timezone, timedelta
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from kubeopt_ai.app import create_app
 from kubeopt_ai.config import TestConfig
 from kubeopt_ai.extensions import db
 from kubeopt_ai.core.models import AuditLog, AuditAction
 from kubeopt_ai.core.audit import (
-    AuditService,
     AuditContext,
     audit_action,
     create_audit_service,

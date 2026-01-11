@@ -3,7 +3,6 @@ Unit tests for rate limiting functionality.
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
 
 from kubeopt_ai.app import create_app
 from kubeopt_ai.config import BaseConfig, TestConfig

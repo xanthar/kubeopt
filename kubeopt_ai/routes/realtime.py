@@ -12,15 +12,11 @@ from typing import Optional
 from enum import Enum
 
 from kubeopt_ai.core.realtime_metrics import (
-    StreamingMetricsCollector,
-    RealTimeAnomalyPipeline,
-    BackgroundMonitor,
     TimeWindow,
     get_streaming_collector,
     get_anomaly_pipeline,
     get_background_monitor,
 )
-from kubeopt_ai.core.anomaly_detection import AlertSeverity
 
 logger = logging.getLogger(__name__)
 

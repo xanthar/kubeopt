@@ -18,7 +18,7 @@ from kubeopt_ai.core.models import (
     RunStatus,
     WorkloadKind,
 )
-from kubeopt_ai.core.k8s_scanner import K8sScanner, scan_manifests, ManifestScanError
+from kubeopt_ai.core.k8s_scanner import K8sScanner, ManifestScanError
 from kubeopt_ai.core.metrics_collector import (
     MetricsCollector,
     MetricsCollectionError,

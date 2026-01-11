@@ -2,7 +2,6 @@
 Unit tests for OpenAPI documentation (F029).
 """
 
-import pytest
 
 
 class TestOpenAPIDocs:

@@ -5,7 +5,6 @@ Tests the cost projection and anomaly detection API endpoints with
 real database transactions and end-to-end request flows.
 """
 
-import pytest
 from pathlib import Path
 
 FIXTURES_DIR = Path(__file__).parent.parent / "fixtures" / "manifests"

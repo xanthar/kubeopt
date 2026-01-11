@@ -10,12 +10,11 @@ from typing import Optional
 
 from flask import Blueprint, jsonify, request, g
 from flask_jwt_extended import jwt_required
-from pydantic import BaseModel, Field, EmailStr, field_validator, ValidationError
+from pydantic import BaseModel, Field, field_validator, ValidationError
 
 from kubeopt_ai.core.auth import (
     get_auth_service,
     get_team_service,
-    get_role_service,
     AuthError,
     InvalidCredentialsError,
     UserInactiveError,

@@ -20,7 +20,7 @@ from kubeopt_ai.core.models import (
     Cluster,
     Suggestion,
 )
-from kubeopt_ai.core.k8s_apply import K8sApplyService, K8sApplyError
+from kubeopt_ai.core.k8s_apply import K8sApplyService
 from kubeopt_ai.core.guardrails import GuardrailService
 from kubeopt_ai.core.audit import AuditService
 

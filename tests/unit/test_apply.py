@@ -10,13 +10,11 @@ Tests cover:
 
 import pytest
 from unittest.mock import patch, Mock, MagicMock
-from datetime import datetime, timezone, timedelta
 from freezegun import freeze_time
 
 from kubeopt_ai.core.models import (
     ApplyPolicy,
     ApplyRequest,
-    ApplyBatch,
     ApplyMode,
     ApplyRequestStatus,
     GuardrailCheckStatus,
@@ -37,16 +35,13 @@ from kubeopt_ai.core.guardrails import (
 )
 from kubeopt_ai.core.k8s_apply import (
     K8sApplyService,
-    K8sApplyError,
     K8sConnectionError,
-    K8sResourceNotFoundError,
     ApplyResult,
     ResourcePatch,
 )
 from kubeopt_ai.core.apply_service import (
     ApplyService,
     ApplyServiceError,
-    ApplyRequestNotFoundError,
     InvalidApplyStateError,
 )
 

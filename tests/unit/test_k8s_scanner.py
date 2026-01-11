@@ -2,7 +2,6 @@
 Unit tests for the Kubernetes manifest scanner.
 """
 
-import os
 import pytest
 from pathlib import Path
 

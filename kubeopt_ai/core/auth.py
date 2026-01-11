@@ -11,7 +11,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional, Tuple
 
 import bcrypt
-from flask import current_app, request
+from flask import current_app
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
@@ -27,7 +27,6 @@ from kubeopt_ai.core.models import (
     TeamMembership,
     RefreshToken,
     UserStatus,
-    TeamStatus,
 )
 from kubeopt_ai.extensions import db
 

@@ -6,7 +6,7 @@ Provides rate limiting decorators and configuration for API endpoints.
 
 import logging
 from functools import wraps
-from typing import Callable, Optional, Any
+from typing import Callable, Any
 
 from flask import jsonify, current_app, g, request
 

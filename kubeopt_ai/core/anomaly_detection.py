@@ -16,12 +16,11 @@ Detection algorithms:
 """
 
 import logging
-import math
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Optional
-from statistics import mean, stdev, median, quantiles
+from statistics import mean, stdev, quantiles
 
 import requests
 
@@ -622,7 +621,7 @@ class AnomalyDetector:
             # CPU analysis
             avg_cpu = metrics.get("avg_cpu_usage")
             p95_cpu = metrics.get("p95_cpu_usage")
-            max_cpu = metrics.get("max_cpu_usage")
+            _max_cpu = metrics.get("max_cpu_usage")  # Reserved for future use
 
             if avg_cpu is not None:
                 # Check CPU underutilization
@@ -648,7 +647,7 @@ class AnomalyDetector:
             # Memory analysis
             avg_mem = metrics.get("avg_memory_usage")
             p95_mem = metrics.get("p95_memory_usage")
-            max_mem = metrics.get("max_memory_usage")
+            _max_mem = metrics.get("max_memory_usage")  # Reserved for future use
 
             if avg_mem is not None:
                 # Check memory underutilization

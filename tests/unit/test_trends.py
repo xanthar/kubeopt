@@ -3,7 +3,6 @@ Unit tests for historical trend analysis (F020).
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta, timezone
 
 from kubeopt_ai.core.models import MetricsHistory, TrendAnalysis, TrendDirection
@@ -11,7 +10,6 @@ from kubeopt_ai.core.trend_analyzer import (
     HistoryCollector,
     TrendAnalyzer,
     TrendAnalyzerError,
-    TrendResult,
 )
 
 

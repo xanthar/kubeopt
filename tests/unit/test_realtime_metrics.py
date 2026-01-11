@@ -2,9 +2,8 @@
 Unit tests for real-time metrics streaming.
 """
 
-import pytest
 from datetime import datetime, timedelta, timezone
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import patch
 
 from kubeopt_ai.core.realtime_metrics import (
     TimeWindow,
