@@ -31,7 +31,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: kubeopt-ai
-          image: kubeopt-ai:latest
+          # Use immutable tags in production: kubeopt-ai:v1.0.0@sha256:<digest>
+          image: kubeopt-ai:v1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

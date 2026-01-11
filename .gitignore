@@ -30,7 +30,26 @@ htmlcov/
 .env.local
 *.env
 
-# Claude Harness - session-specific files
-.claude-harness/context_metrics.json
-.claude-harness/session-history/
-.claude-harness/discoveries.json
+# Claude Code / Harness (internal development - keep locally, don't distribute)
+.claude-harness/
+.claude/commands/
+.claude/settings.local.json
+.claude/plans/
+
+# Security audit reports (regenerate as needed)
+docs/security-audit-appsec/
+
+# IDE and editor
+*.code-workspace
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db

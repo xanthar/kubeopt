@@ -1,9 +1,25 @@
-# kubeopt
+# KubeOpt AI
 
-KubeOpt AI – AI-Driven Kubernetes Resource & Cost Optimizer
+AI-Driven Kubernetes Resource & Cost Optimizer
 
+---
+
+## Quick Reference
+
+| Item | Value |
+|------|-------|
+| Port | 5000 |
+| Health | `GET /api/v1/health` |
+| API Docs | `GET /api/docs` (Swagger UI) |
+| Start | `python run.py` |
+| Test | `pytest tests/unit/ -v` |
+| Coverage | 80% minimum |
+
+---
 
 # CLAUDE HARNESS INTEGRATION
+
+> **Note for public contributors:** Claude Harness is an optional workflow system for AI-assisted development. You can use this project without it - the harness commands below are for developers who have claude-harness installed.
 
 ## WHAT IS THIS?
 
@@ -132,8 +148,50 @@ Monitor token usage and generate handoffs:
 
 ## Project-Specific Rules
 
-(Add your project-specific rules here)
+### API Conventions
+- All endpoints under `/api/v1/`
+- JSON request/response with `Content-Type: application/json`
+- Error responses: `{"error": "message", "code": "ERROR_CODE", "details": {}}`
+- Pagination: `?page=1&per_page=50` (max 100)
+
+### Code Organization
+- **Models:** `kubeopt_ai/core/models.py` - SQLAlchemy models
+- **Schemas:** `kubeopt_ai/core/schemas.py` - Pydantic validation
+- **Routes:** `kubeopt_ai/routes/` - Flask blueprints
+- **Services:** `kubeopt_ai/core/` - Business logic
+- **LLM:** `kubeopt_ai/llm/` - Claude AI integration
+
+### Environment Variables (Required)
+```bash
+DATABASE_URL=postgresql://user:pass@localhost:5432/kubeopt
+LLM_API_KEY=sk-ant-...           # Anthropic API key
+PROMETHEUS_BASE_URL=http://prometheus:9090
+SECRET_KEY=your-secret-key       # Flask secret
+JWT_SECRET_KEY=your-jwt-secret   # JWT signing key
+```
+
+### Testing Requirements
+- All new features require unit tests
+- Mock external services (Prometheus, Claude API, K8s)
+- Target 80% coverage on new code
+- Run tests: `pytest tests/unit/ -v --cov=kubeopt_ai`
+
+### Database Migrations
+```bash
+# Create migration after model changes
+alembic revision -m "describe change" --autogenerate
+
+# Apply migrations
+alembic upgrade head
+```
+
+### Security Guidelines
+- Never commit secrets or API keys
+- Use environment variables for all configuration
+- Validate all user input with Pydantic schemas
+- Rate limiting enabled by default (100/hour)
 
 ---
-**Version:** 1.0
-**Maintained by:** Claude Harness
+
+**Version:** 1.0.0
+**License:** MIT

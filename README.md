@@ -1,8 +1,12 @@
 # KubeOpt AI
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+
 **AI-Driven Kubernetes Resource & Cost Optimizer**
 
-KubeOpt AI analyzes your Kubernetes workloads and provides intelligent recommendations for optimizing resource requests, limits, and HPA configurations using Claude AI.
+KubeOpt AI analyzes your Kubernetes workloads and provides intelligent recommendations for optimizing resource requests, limits, and HPA configurations using Claude AI. Typical savings: **20-40% reduction in cloud costs**.
 
 ## Features
 
@@ -59,8 +63,8 @@ KubeOpt AI analyzes your Kubernetes workloads and provides intelligent recommend
 
 1. **Clone and setup environment**:
    ```bash
-   git clone https://github.com/your-org/kubeopt-ai.git
-   cd kubeopt-ai
+   git clone https://github.com/xanthar/kubeopt.git
+   cd kubeopt
 
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -302,12 +306,23 @@ kubeopt-ai/
 
 ## Contributing
 
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+Quick start:
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feat/my-feature`
 3. Make your changes with tests
-4. Run the test suite: `pytest`
+4. Run tests: `pytest tests/unit/ -v`
 5. Submit a pull request
+
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for planned features and future direction.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT License - see [LICENSE](LICENSE) file for details.

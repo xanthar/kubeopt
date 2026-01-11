@@ -318,6 +318,10 @@ class ClusterManager:
         latency_ms = None
 
         # Test Kubernetes API connection
+        # SSL verification can be configured per-cluster via settings.verify_ssl
+        # Defaults to True for security - only disable for self-signed certs
+        verify_ssl = cluster.settings.get("verify_ssl", True) if cluster.settings else True
+
         if cluster.api_server_url:
             try:
                 import time
@@ -325,7 +329,7 @@ class ClusterManager:
                 response = requests.get(
                     f"{cluster.api_server_url}/version",
                     timeout=self.timeout,
-                    verify=False  # In production, handle TLS properly
+                    verify=verify_ssl,
                 )
                 latency_ms = (time.time() - start) * 1000
 
@@ -351,7 +355,7 @@ class ClusterManager:
                 response = requests.get(
                     f"{cluster.prometheus_url}/api/v1/status/config",
                     timeout=self.timeout,
-                    verify=False
+                    verify=verify_ssl,
                 )
                 prometheus_ok = response.status_code == 200
 
